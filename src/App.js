@@ -1,23 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import { Appshell } from "./Components/Appshell";
+import { ToDo } from "./Components/To-Do";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Appshell>
+        <button className="m-2 shadow-md hover:drop-shadow-xl hover:bg-blue-700 p-2 w-24 rounded-lg bg-blue-500 text-white">
+          Add +
+        </button>
+        <ToDo />
+      </Appshell>
     </div>
   );
 }
