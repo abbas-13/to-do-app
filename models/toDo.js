@@ -12,5 +12,5 @@ const toDoSchema = new mongoose.Schema({
   dateCreated: String,
 });
 
-const ToDo = mongoose.model("toDo", toDoSchema);
+const ToDo = mongoose.model("ToDo", toDoSchema);
 export default ToDo;

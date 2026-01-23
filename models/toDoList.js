@@ -5,5 +5,5 @@ const toDoListSchema = new mongoose.Schema({
   name: String,
 });
 
-const ToDoList = mongoose.model("toDoList", toDoListSchema);
+const ToDoList = mongoose.model("ToDoList", toDoListSchema);
 export default ToDoList;
