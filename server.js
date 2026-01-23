@@ -1,19 +1,26 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
-import toDoLists from "./routes/toDoLists";
+import toDoLists from "./routes/toDoLists.js";
 
+const app = express();
 app.use(express.json());
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200,
+};
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MONGODB CONNECTED"))
   .catch((err) => console.log("MONGODB NOT CONNECTED with error: ", err));
 
-const app = express();
 const PORT = process.env.PORT || 8000;
 
 toDoLists(app);
+app.use(cors(corsOptions));
 
 app.listen(PORT, (error) => {
   if (!error)

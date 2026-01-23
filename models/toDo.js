@@ -1,6 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-const toDoSchema = new Schema({
+const toDoSchema = new mongoose.Schema({
   id: String,
   isChecked: Boolean,
   list: String,
@@ -12,4 +12,5 @@ const toDoSchema = new Schema({
   dateCreated: String,
 });
 
-mongoose.model("toDo", userSchema);
+const ToDo = mongoose.model("toDo", toDoSchema);
+export default ToDo;

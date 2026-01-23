@@ -1,8 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-const toDoListSchema = new Schema({
+const toDoListSchema = new mongoose.Schema({
   id: String,
   name: String,
 });
 
-mongoose.model("toDoList", toDoListSchema);
+const ToDoList = mongoose.model("toDoList", toDoListSchema);
+export default ToDoList;
