@@ -20,6 +20,7 @@ mongoose
 const PORT = process.env.PORT || 8000;
 
 toDoLists(app);
+
 app.use(cors(corsOptions));
 
 app.listen(PORT, (error) => {

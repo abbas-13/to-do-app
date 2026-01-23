@@ -17,17 +17,27 @@ export default (app) => {
       await newToDoList.save();
       res.status(201).json({ body: newToDoList });
     } catch (err) {
+      console.error("Error while creating list: ", err);
       res.status(400).json({ error: err.message });
     }
   });
 
   app.delete("/api/lists/:id", async (req, res) => {
     try {
-      await ToDoList.findOneAndDelete(req.params.id);
+      const deletedList = await ToDoList.findOneAndDelete({
+        id: req.params.id,
+      });
+
+      if (!deletedList) {
+        return res.status(404).json({ error: "List not found" });
+      }
+
       res.status(200).json({
-        message: `List with id: ${req.params.id} deleted successfully`,
+        message: `List deleted successfully`,
+        id: req.params.id,
       });
     } catch (err) {
+      console.error("Error while deleting list: ", err);
       res.status(400).json({ error: err.message });
     }
   });
