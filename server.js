@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import toDoLists from "./routes/toDoLists.js";
+import toDoTasks from "./routes/toDoTasks.js";
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,7 @@ mongoose
 const PORT = process.env.PORT || 8000;
 
 toDoLists(app);
+toDoTasks(app);
 
 app.use(cors(corsOptions));
 
