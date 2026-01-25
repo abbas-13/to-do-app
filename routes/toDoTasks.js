@@ -49,8 +49,8 @@ export default (app) => {
   app.put("/api/toDos/:id", async (req, res) => {
     try {
       const { isChecked } = req.body;
-      const updatedToDo = await ToDo.findOneAndUpdate(
-        { id: req.params.id },
+      const updatedToDo = await ToDo.findByIdAndUpdate(
+        req.params.id,
         { isChecked },
         {
           new: true,
@@ -74,7 +74,7 @@ export default (app) => {
 
   app.delete("/api/toDos/:id", async (req, res) => {
     try {
-      const deletedToDo = await ToDo.findOneAndDelete({ id: req.params.id });
+      const deletedToDo = await ToDo.findByIdAndDelete(req.params.id);
 
       if (!deletedToDo) {
         res.status(404).json({ error: "ToDo not found" });
