@@ -9,7 +9,8 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://abbas-todo-app.netlify.app"],
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
@@ -20,10 +21,14 @@ mongoose
 
 const PORT = process.env.PORT || 8000;
 
+app.use(cors(corsOptions));
+
 toDoLists(app);
 toDoTasks(app);
 
-app.use(cors(corsOptions));
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date() });
+});
 
 app.listen(PORT, (error) => {
   if (!error)
