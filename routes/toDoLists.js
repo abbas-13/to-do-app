@@ -48,7 +48,7 @@ export default (app) => {
   app.delete("/api/lists/:id", async (req, res) => {
     try {
       const deletedList = await ToDoList.findByIdAndDelete(req.params.id);
-      console.log(req.params);
+
       if (!deletedList) {
         return res.status(404).json({ error: "List not found" });
       }

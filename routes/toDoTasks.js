@@ -16,28 +16,7 @@ export default (app) => {
 
   app.post("/api/toDos", async (req, res) => {
     try {
-      const {
-        id,
-        isChecked,
-        list,
-        toDoName,
-        date,
-        notes,
-        time,
-        priority,
-        dateCreated,
-      } = req.body;
-      const newToDo = new ToDo({
-        id,
-        isChecked,
-        list,
-        toDoName,
-        date,
-        notes,
-        time,
-        priority,
-        dateCreated,
-      });
+      const newToDo = new ToDo(req.body);
       await newToDo.save();
       res.status(201).json({ body: newToDo });
     } catch (err) {
