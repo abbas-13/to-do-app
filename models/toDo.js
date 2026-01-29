@@ -10,6 +10,7 @@ const toDoSchema = new mongoose.Schema({
   priority: String,
   dateCreated: String,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  deleted: { type: Boolean, required: true },
 });
 
 const ToDo = mongoose.model("ToDo", toDoSchema);

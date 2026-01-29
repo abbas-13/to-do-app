@@ -7,6 +7,7 @@ export default (app) => {
       const toDos = await ToDo.find({
         list: req.params.id,
         userId: req.user._id,
+        deleted: false,
       });
 
       if (!toDos) {
@@ -20,7 +21,11 @@ export default (app) => {
 
   app.post("/api/toDos", requireLogin, async (req, res) => {
     try {
-      const newToDo = new ToDo({ ...req.body, userId: req.user._id });
+      const newToDo = new ToDo({
+        ...req.body,
+        userId: req.user._id,
+        deleted: false,
+      });
       await newToDo.save();
       res.status(201).json({ body: newToDo });
     } catch (err) {
@@ -55,7 +60,7 @@ export default (app) => {
 
   app.delete("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
-      const deletedToDo = await ToDo.findOneAndDelete({
+      const deletedToDo = await ToDo.findOne({
         _id: req.params.id,
         userId: req.user._id,
       });
@@ -63,6 +68,9 @@ export default (app) => {
       if (!deletedToDo) {
         res.status(404).json({ error: "ToDo not found" });
       }
+
+      deletedToDo.deleted = true;
+      deletedToDo.save();
 
       res.status(200).json({
         message: "ToDo deleted successfully",
