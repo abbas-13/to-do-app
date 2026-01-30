@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const toDoSchema = new mongoose.Schema({
-  id: String,
   isChecked: Boolean,
   list: String,
   toDoName: String,
@@ -10,6 +9,8 @@ const toDoSchema = new mongoose.Schema({
   time: String,
   priority: String,
   dateCreated: String,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  deleted: { type: Boolean, required: true },
 });
 
 const ToDo = mongoose.model("ToDo", toDoSchema);

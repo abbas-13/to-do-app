@@ -19,9 +19,12 @@
   },
   "homepage": "https://github.com/abbas-13/to-do-app-#readme",
   "dependencies": {
+    "cookie-session": "^2.1.1",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mongoose": "^9.1.5"
+    "mongoose": "^9.1.5",
+    "passport": "^0.5.0",
+    "passport-google-oauth20": "^2.0.0"
   }
 }

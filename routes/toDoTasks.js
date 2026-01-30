@@ -1,12 +1,17 @@
 import ToDo from "../models/toDo.js";
+import requireLogin from "../middlewares/requireLogin.js";
 
 export default (app) => {
-  app.get("/api/toDos/:id", async (req, res) => {
+  app.get("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
-      const toDos = await ToDo.find({ list: req.params.id });
+      const toDos = await ToDo.find({
+        list: req.params.id,
+        userId: req.user._id,
+        deleted: false,
+      });
 
       if (!toDos) {
-        return res.status(404).json({ error: "ToDo not found" });
+        return res.status(404).json({ error: "No ToDos exist" });
       }
       res.status(200).json(toDos);
     } catch (err) {
@@ -14,9 +19,13 @@ export default (app) => {
     }
   });
 
-  app.post("/api/toDos", async (req, res) => {
+  app.post("/api/toDos", requireLogin, async (req, res) => {
     try {
-      const newToDo = new ToDo(req.body);
+      const newToDo = new ToDo({
+        ...req.body,
+        userId: req.user._id,
+        deleted: false,
+      });
       await newToDo.save();
       res.status(201).json({ body: newToDo });
     } catch (err) {
@@ -25,21 +34,19 @@ export default (app) => {
     }
   });
 
-  app.put("/api/toDos/:id", async (req, res) => {
+  app.put("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
-      const { isChecked } = req.body;
-      const updatedToDo = await ToDo.findByIdAndUpdate(
-        req.params.id,
-        { isChecked },
-        {
-          new: true,
-          runValidators: true,
-        },
-      );
+      const updatedToDo = await ToDo.findOne({
+        _id: req.params.id,
+        userId: req.user._id,
+      });
 
       if (!updatedToDo) {
         res.status(404).json({ error: "ToDo not found" });
       }
+
+      updatedToDo.isChecked = req.body.isChecked;
+      await updatedToDo.save();
 
       res.status(200).json({
         message: "ToDo updated successfully",
@@ -51,13 +58,19 @@ export default (app) => {
     }
   });
 
-  app.delete("/api/toDos/:id", async (req, res) => {
+  app.delete("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
-      const deletedToDo = await ToDo.findByIdAndDelete(req.params.id);
+      const deletedToDo = await ToDo.findOne({
+        _id: req.params.id,
+        userId: req.user._id,
+      });
 
       if (!deletedToDo) {
         res.status(404).json({ error: "ToDo not found" });
       }
+
+      deletedToDo.deleted = true;
+      deletedToDo.save();
 
       res.status(200).json({
         message: "ToDo deleted successfully",
