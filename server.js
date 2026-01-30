@@ -29,6 +29,7 @@ const corsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   exposedHeaders: ["set-cookie"],
 };
 
@@ -49,11 +50,29 @@ app.use(
     maxAge: 24 * 3600 * 1000,
     keys: [process.env.COOKIE_KEY],
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    domain: "to-do-app-server-jvdr.onrender.com",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   }),
 );
+
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === "production") {
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Origin",
+      req.headers.origin || "https://<your-netlify-domain>.netlify.app",
+    );
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    );
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   console.log("=== COOKIE FLOW DEBUG ===");
@@ -65,7 +84,6 @@ app.use((req, res, next) => {
   const originalSetHeader = res.setHeader;
   res.setHeader = function (name, value) {
     if (name.toLowerCase() === "set-cookie") {
-      console.log("=== SETTING COOKIE ===");
       console.log("Cookie value:", value);
     }
     return originalSetHeader.call(this, name, value);

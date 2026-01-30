@@ -10,7 +10,10 @@ export default (app) => {
 
   app.get(
     "/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login" }),
+    passport.authenticate("google", {
+      failureRedirect: "/login",
+      session: true,
+    }),
     (req, res) => {
       res.redirect(process.env.CLIENT_SIDE_URL);
     },
