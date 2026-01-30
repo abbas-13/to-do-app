@@ -14,17 +14,27 @@ import authRoutes from "./routes/authRoutes.js";
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "https://abbas-todo-app.netlify.app",
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:8000",
+      "https://abbas-todo-app.netlify.app",
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
+  exposedHeaders: ["set-cookie"],
 };
 
 app.use(express.json());
 app.use(cors(corsOptions));
+app.set("trust proxy", 1);
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -38,14 +48,21 @@ app.use(
     name: "session",
     maxAge: 24 * 3600 * 1000,
     keys: [process.env.COOKIE_KEY],
-    sameSite: "none",
-    secure: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   }),
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+  console.log("Session ID:", req.sessionID);
+  console.log("Session:", req.session);
+  console.log("User:", req.user);
+  next();
+});
 
 authRoutes(app);
 toDoLists(app);
