@@ -49,10 +49,30 @@ app.use(
     maxAge: 24 * 3600 * 1000,
     keys: [process.env.COOKIE_KEY],
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain: "to-do-app-server-jvdr.onrender.com",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   }),
 );
+
+app.use((req, res, next) => {
+  console.log("=== COOKIE FLOW DEBUG ===");
+  console.log("URL:", req.url);
+  console.log("Origin:", req.headers.origin);
+  console.log("Cookie Header:", req.headers.cookie || "No cookie header");
+  console.log("Session ID from request:", req.sessionID);
+
+  const originalSetHeader = res.setHeader;
+  res.setHeader = function (name, value) {
+    if (name.toLowerCase() === "set-cookie") {
+      console.log("=== SETTING COOKIE ===");
+      console.log("Cookie value:", value);
+    }
+    return originalSetHeader.call(this, name, value);
+  };
+
+  next();
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
