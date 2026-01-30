@@ -48,6 +48,7 @@ toDoLists(app);
 toDoTasks(app);
 
 app.get("/health", (req, res) => {
+  console.log({ status: "OK", timestamp: new Date() });
   res.json({ status: "OK", timestamp: new Date() });
 });
 
