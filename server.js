@@ -35,8 +35,12 @@ const PORT = process.env.PORT || 8000;
 
 app.use(
   cookieSession({
-    maxAge: 1800 * 1000,
+    name: "session",
+    maxAge: 24 * 3600 * 1000,
     keys: [process.env.COOKIE_KEY],
+    sameSite: "none",
+    secure: true,
+    httpOnly: true,
   }),
 );
 
