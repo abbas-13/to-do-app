@@ -12,7 +12,7 @@ export default (app) => {
     "/auth/google/callback",
     passport.authenticate("google", { failureRedirect: "/login" }),
     (req, res) => {
-      res.redirect("http://localhost:3000/");
+      res.redirect(process.env.CLIENT_SIDE_URL);
     },
   );
 
