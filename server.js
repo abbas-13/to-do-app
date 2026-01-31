@@ -14,23 +14,13 @@ import authRoutes from "./routes/authRoutes.js";
 const app = express();
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "http://localhost:8000",
-      "https://abbas-todo-app.netlify.app",
-    ];
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://abbas-todo-app.netlify.app",
+  ],
 
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
   credentials: true,
-  optionsSuccessStatus: 200,
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  exposedHeaders: ["set-cookie"],
 };
 
 app.use(express.json());
@@ -49,7 +39,7 @@ app.use(
     name: "session",
     maxAge: 24 * 3600 * 1000,
     keys: [process.env.COOKIE_KEY],
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   }),
