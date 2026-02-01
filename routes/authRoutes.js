@@ -1,8 +1,10 @@
 import passport from "passport";
+import googleCallback from "../middlewares/requireLogin.js";
 
 export default (app) => {
   app.get(
     "/auth/google",
+    googleCallback,
     passport.authenticate("google", {
       scope: ["profile", "email"],
     }),
