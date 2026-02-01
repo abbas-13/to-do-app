@@ -20,23 +20,6 @@ app.use(express.json());
 await mongoose.connect(process.env.MONGO_URI);
 console.log("MONGODB CONNECTED");
 
-app.use(
-  session({
-    secret: process.env.COOKIE_KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(),
-    }),
-    cookie: {
-      secure: "auto",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      httpOnly: true,
-      maxAge: 24 * 3600 * 1000,
-    },
-  }),
-);
-
 const corsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
@@ -54,6 +37,23 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+app.use(
+  session({
+    secret: process.env.COOKIE_KEY,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+    }),
+    cookie: {
+      secure: "auto",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      maxAge: 24 * 3600 * 1000,
+    },
+  }),
+);
 
 const PORT = process.env.PORT || 8000;
 
