@@ -15,8 +15,8 @@ export default (app) => {
       failureRedirect: "/login",
       session: true,
     }),
-    googleCallback,
     (req, res) => {
+      googleCallback();
       console.log("Session ID:", req.sessionID);
       console.log("Full session cookie:", JSON.stringify(req.session.cookie));
       console.log("Set-Cookie headers:", res.getHeaders()["set-cookie"]);
