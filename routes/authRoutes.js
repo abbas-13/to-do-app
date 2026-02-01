@@ -1,4 +1,5 @@
 import passport from "passport";
+import crypto from "crypto";
 
 export default (app) => {
   app.get(
