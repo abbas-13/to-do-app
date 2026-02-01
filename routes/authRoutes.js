@@ -22,7 +22,11 @@ export default (app) => {
       console.log("req.user exists:", !!req.user);
       console.log("req.session content:", req.session);
 
-      res.redirect(process.env.CLIENT_SIDE_URL);
+      res.json({
+        success: true,
+        redirect: process.env.CLIENT_SIDE_URL,
+        user: req.user.id,
+      });
     },
   );
 

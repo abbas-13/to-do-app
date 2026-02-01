@@ -28,7 +28,7 @@ app.use(
       client: mongoose.connection.getClient(),
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: "auto",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       httpOnly: true,
       maxAge: 24 * 3600 * 1000,
@@ -56,12 +56,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
-
-// app.use((req, res, next) => {
-//   console.log("Session ID:", req.sessionID);
-//   console.log("Session:", req.session);
-//   next();
-// });
 
 app.use(passport.initialize());
 app.use(passport.session());
