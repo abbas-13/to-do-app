@@ -28,3 +28,5 @@ const googleCallback = (req, res, next) => {
   console.log("Manual Set-Cookie sent:", setCookie);
   next();
 };
+
+export default googleCallback;
