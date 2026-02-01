@@ -17,7 +17,8 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI).then(console.log("MONGODB CONNECTED"));
+await mongoose.connect(process.env.MONGO_URI);
+console.log("MONGODB CONNECTED");
 
 app.use(
   session({
@@ -32,7 +33,6 @@ app.use(
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       httpOnly: true,
       maxAge: 24 * 3600 * 1000,
-      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "",
     },
   }),
 );
