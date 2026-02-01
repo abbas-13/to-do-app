@@ -18,12 +18,13 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MONGODB CONNECTED"))
+  .catch((err) => console.log("MONGODB NOT CONNECTED with error: ", err));
+
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("MONGODB CONNECTED");
-  mongoStore = MongoStore.create({
-    client: mongoose.connection.getClient(),
-    collectionName: "sessions",
-  });
 
   app.use(
     session({
