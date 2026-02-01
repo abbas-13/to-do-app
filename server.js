@@ -17,27 +17,25 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
-  console.log("MONGODB CONNECTED");
+mongoose.connect(process.env.MONGO_URI).then(console.log("MONGODB CONNECTED"));
 
-  app.use(
-    session({
-      secret: process.env.COOKIE_KEY,
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-      }),
-      cookie: {
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        httpOnly: true,
-        maxAge: 24 * 3600 * 1000,
-        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "",
-      },
+app.use(
+  session({
+    secret: process.env.COOKIE_KEY,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
     }),
-  );
-});
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      maxAge: 24 * 3600 * 1000,
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "",
+    },
+  }),
+);
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -56,9 +54,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 const PORT = process.env.PORT || 8000;
 
@@ -86,6 +81,9 @@ app.use((req, res, next) => {
   console.log("User:", req.user);
   next();
 });
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 authRoutes(app);
 toDoLists(app);
