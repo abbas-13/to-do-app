@@ -1,4 +1,5 @@
 import passport from "passport";
+import googleCallback from "../middlewares/googleCallback";
 
 export default (app) => {
   app.get(
@@ -14,6 +15,7 @@ export default (app) => {
       failureRedirect: "/login",
       session: true,
     }),
+    googleCallback,
     (req, res) => {
       console.log("Session ID:", req.sessionID);
       console.log("Full session cookie:", JSON.stringify(req.session.cookie));
