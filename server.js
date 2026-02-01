@@ -18,27 +18,30 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MONGODB CONNECTED"))
-  .catch((err) => console.log("MONGODB NOT CONNECTED with error: ", err));
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log("MONGODB CONNECTED");
+  mongoStore = MongoStore.create({
+    client: mongoose.connection.getClient(),
+    collectionName: "sessions",
+  });
 
-app.use(
-  session({
-    secret: process.env.COOKIE_KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(),
+  app.use(
+    session({
+      secret: process.env.COOKIE_KEY,
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+      }),
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        httpOnly: true,
+        maxAge: 24 * 3600 * 1000,
+      },
     }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      httpOnly: true,
-      maxAge: 24 * 3600 * 1000,
-    },
-  }),
-);
+  );
+});
 
 const corsOptions = {
   origin: (origin, callback) => {
