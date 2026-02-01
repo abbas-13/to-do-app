@@ -1,8 +1,10 @@
 import express from "express";
 import passport from "passport";
-import cookieSession from "cookie-session";
+// import cookieSession from "cookie-session";
+import session from "express-session";
 import cors from "cors";
 import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
 
 import "dotenv/config";
 import "./models/user.js";
@@ -34,18 +36,36 @@ mongoose
 
 const PORT = process.env.PORT || 8000;
 
+// app.use(
+//   cookieSession({
+//     name: "session",
+//     maxAge: 24 * 3600 * 1000,
+//     keys: [process.env.COOKIE_KEY],
+//     sameSite: "lax",
+//     secure: process.env.NODE_ENV === "production",
+//     httpOnly: true,
+//   }),
+// );
+
 app.use(
-  cookieSession({
-    name: "session",
-    maxAge: 24 * 3600 * 1000,
-    keys: [process.env.COOKIE_KEY],
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
+  session({
+    secret: process.env.COOKIE_KEY,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      maxAge: 24 * 3600 * 1000,
+    },
   }),
 );
 
 app.use((req, res, next) => {
+  console.log({ isProduction: process.env.NODE_ENV === "production" });
   if (process.env.NODE_ENV === "production") {
     res.header("Access-Control-Allow-Credentials", "true");
     res.header(
@@ -97,7 +117,6 @@ toDoLists(app);
 toDoTasks(app);
 
 app.get("/health", (req, res) => {
-  console.log({ status: "OK", timestamp: new Date() });
   res.json({ status: "OK", timestamp: new Date() });
 });
 

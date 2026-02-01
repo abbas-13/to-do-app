@@ -15,6 +15,7 @@ export default (app) => {
       session: true,
     }),
     (req, res) => {
+      console.log(req);
       res.redirect(process.env.CLIENT_SIDE_URL);
     },
   );
