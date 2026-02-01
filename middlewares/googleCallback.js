@@ -9,7 +9,7 @@ const googleCallback = (req, res, next) => {
 
   const sessionId = req.sessionID;
   const cookie = req.session.cookie;
-  const secret = process.env.SESSION_SECRET;
+  const secret = process.env.COOKIE_KEY;
 
   const hmac = crypto.createHmac("sha256", secret);
   hmac.update(sessionId);
