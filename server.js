@@ -57,30 +57,11 @@ app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
-app.use((req, res, next) => {
-  console.log("=== COOKIE FLOW DEBUG ===");
-  console.log("URL:", req.url);
-  console.log("Origin:", req.headers.origin);
-  console.log("Cookie Header:", req.headers.cookie || "No cookie header");
-  console.log("Session ID from request:", req.sessionID);
-
-  const originalSetHeader = res.setHeader;
-  res.setHeader = function (name, value) {
-    if (name.toLowerCase() === "set-cookie") {
-      console.log("Cookie value:", value);
-    }
-    return originalSetHeader.call(this, name, value);
-  };
-
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("Session ID:", req.sessionID);
-  console.log("Session:", req.session);
-  console.log("User:", req.user);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("Session ID:", req.sessionID);
+//   console.log("Session:", req.session);
+//   next();
+// });
 
 app.use(passport.initialize());
 app.use(passport.session());

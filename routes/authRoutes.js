@@ -1,10 +1,8 @@
 import passport from "passport";
-import googleCallback from "../middlewares/googleCallback.js";
 
 export default (app) => {
   app.get(
     "/auth/google",
-    googleCallback,
     passport.authenticate("google", {
       scope: ["profile", "email"],
     }),
@@ -17,7 +15,13 @@ export default (app) => {
       session: true,
     }),
     (req, res) => {
-      console.log(req);
+      console.log("Session ID:", req.sessionID);
+      console.log("Full session cookie:", JSON.stringify(req.session.cookie));
+      console.log("Set-Cookie headers:", res.getHeaders()["set-cookie"]);
+
+      console.log("req.user exists:", !!req.user);
+      console.log("req.session content:", req.session);
+
       res.redirect(process.env.CLIENT_SIDE_URL);
     },
   );

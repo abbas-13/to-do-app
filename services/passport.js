@@ -5,13 +5,12 @@ import mongoose from "mongoose";
 const User = mongoose.model("User");
 
 passport.serializeUser((user, done) => {
-  console.log("serialize user", user.id);
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
   const user = await User.findById(id);
-  console.log("deserialise user", { user, id });
+  // console.log("deserialise user", { user, id });
   done(null, user);
 });
 
@@ -29,7 +28,6 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const existingUser = await User.findOne({ googleId: profile.id });
-        console.log("google strategy", existingUser);
 
         if (existingUser) {
           return done(null, existingUser);
