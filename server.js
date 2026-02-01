@@ -1,6 +1,5 @@
 import express from "express";
 import passport from "passport";
-// import cookieSession from "cookie-session";
 import session from "express-session";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -39,6 +38,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         httpOnly: true,
         maxAge: 24 * 3600 * 1000,
+        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : "",
       },
     }),
   );
