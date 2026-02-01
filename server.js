@@ -15,46 +15,13 @@ import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "http://localhost:8000",
-      "https://abbas-todo-app.netlify.app",
-    ];
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, origin);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
-
-app.use(express.json());
-app.use(cors(corsOptions));
 app.set("trust proxy", 1);
+app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MONGODB CONNECTED"))
   .catch((err) => console.log("MONGODB NOT CONNECTED with error: ", err));
-
-const PORT = process.env.PORT || 8000;
-
-// app.use(
-//   cookieSession({
-//     name: "session",
-//     maxAge: 24 * 3600 * 1000,
-//     keys: [process.env.COOKIE_KEY],
-//     sameSite: "lax",
-//     secure: process.env.NODE_ENV === "production",
-//     httpOnly: true,
-//   }),
-// );
 
 app.use(
   session({
@@ -73,24 +40,28 @@ app.use(
   }),
 );
 
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header(
-      "Access-Control-Allow-Origin",
-      req.headers.origin || "https://<your-netlify-domain>.netlify.app",
-    );
-    res.header(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PUT, DELETE, OPTIONS",
-    );
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-    );
-  }
-  next();
-});
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:8000",
+      "https://abbas-todo-app.netlify.app",
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+const PORT = process.env.PORT || 8000;
 
 app.use((req, res, next) => {
   console.log("=== COOKIE FLOW DEBUG ===");
@@ -109,9 +80,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use((req, res, next) => {
   console.log("Session ID:", req.sessionID);
