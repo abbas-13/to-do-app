@@ -1,5 +1,5 @@
 import passport from "passport";
-import googleCallback from "../middlewares/requireLogin.js";
+import googleCallback from "../middlewares/googleCallback.js";
 
 export default (app) => {
   app.get(
