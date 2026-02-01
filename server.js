@@ -16,12 +16,21 @@ import authRoutes from "./routes/authRoutes.js";
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "https://abbas-todo-app.netlify.app",
-  ],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "http://localhost:8000",
+      "https://abbas-todo-app.netlify.app",
+    ];
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, origin);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 
@@ -65,7 +74,6 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log({ isProduction: process.env.NODE_ENV === "production" });
   if (process.env.NODE_ENV === "production") {
     res.header("Access-Control-Allow-Credentials", "true");
     res.header(
