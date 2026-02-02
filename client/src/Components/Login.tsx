@@ -32,7 +32,7 @@ export const Login = () => {
             Sign In
           </Button>
           <a
-            href={`${import.meta.env.VITE_API_URL}/auth/google`}
+            href={`/auth/google`}
             className="text-[16px] rounded-md! w-full max-h-[40px] cursor-pointer hover:bg-[#FFFFFF]! dark:bg-[#EEEEEE] dark:hover:bg-white! dark:text-black border-2 dark:border-[#EEEEEE] dark:hover:border-2 dark:hover:border-[#EEEEEE]! dark:active:bg-[#EEEEEE]! dark:active:outline-2 dark:active:outline-white flex items-center gap-2 rounded-sm p-2 px-3"
           >
             <svg

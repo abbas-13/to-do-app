@@ -24,16 +24,13 @@ export const CustomSidebar = () => {
 
   const addList = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lists`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`/api/lists`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -61,24 +58,21 @@ export const CustomSidebar = () => {
 
   const createList = async (name: string, id: string): Promise<void> => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lists/${id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name }),
+      const response = await fetch(`/api/lists/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ name }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
-      const updatedLists = lists.map((list) =>
+      const updatedLists = lists.map((list: ListsStateType) =>
         list._id === id ? { ...list, name } : list,
       );
 
@@ -93,23 +87,22 @@ export const CustomSidebar = () => {
 
   const deleteList = async (id: string): Promise<void> => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lists/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`/api/lists/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
-      const updatedToDoLists = lists.filter((toDoList) => toDoList._id !== id);
+      const updatedToDoLists = lists.filter(
+        (toDoList: ListsStateType) => toDoList._id !== id,
+      );
 
       setLists(updatedToDoLists);
       selectList("", "");
