@@ -4,6 +4,7 @@ import session from "express-session";
 import cors from "cors";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
+import path from "path";
 
 import "dotenv/config";
 import "./models/user.js";
@@ -63,6 +64,14 @@ app.use(passport.session());
 authRoutes(app);
 toDoLists(app);
 toDoTasks(app);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+  });
+}
 
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date() });
