@@ -26,19 +26,12 @@ await mongoose.connect(process.env.MONGO_URI);
 console.log("MONGODB CONNECTED");
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "http://localhost:8000",
-      "https://abbas-todo-app.netlify.app",
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed"));
-    }
-  },
+  origin:
+    process.env.NODE_ENV === "production"
+      ? "https://to-do-app-server-qkgr.onrender.com"
+      : "http://localhost:3000",
   credentials: true,
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
