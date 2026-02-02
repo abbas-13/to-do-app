@@ -31,13 +31,10 @@ const App = () => {
 
   const fetchToDos = async (id: string) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/toDos/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
+      const response = await fetch(`/api/toDos/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error("Error fetching To Dos: ", await response.json());
@@ -64,13 +61,10 @@ const App = () => {
 
   const fetchToDoLists = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lists`,
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
+      const response = await fetch(`/api/lists`, {
+        method: "GET",
+        credentials: "include",
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -101,13 +95,10 @@ const App = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/current_user`,
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
+      const response = await fetch(`/api/current_user`, {
+        method: "GET",
+        credentials: "include",
+      });
 
       if (!response.ok) {
         toast.error("User not logged in", {

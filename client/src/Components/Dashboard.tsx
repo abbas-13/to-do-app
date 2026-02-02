@@ -71,17 +71,14 @@ export const Dashboard = ({
         dateCreated: new Date(),
       };
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/toDos`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newToDo),
+      const response = await fetch(`/api/toDos`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(newToDo),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -102,17 +99,14 @@ export const Dashboard = ({
 
   const checkToDo = async (toDoId: string, isChecked: boolean) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/toDos/${toDoId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isChecked: isChecked }),
+      const response = await fetch(`/api/toDos/${toDoId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ isChecked: isChecked }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -133,16 +127,13 @@ export const Dashboard = ({
 
   const deleteToDo = async (toDoId: string) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/toDos/${toDoId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`/api/toDos/${toDoId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
