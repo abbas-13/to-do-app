@@ -4,7 +4,8 @@ import session from "express-session";
 import cors from "cors";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
-import path from "path";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 import "dotenv/config";
 import "./models/user.js";
@@ -12,6 +13,9 @@ import "./services/passport.js";
 import toDoLists from "./routes/toDoLists.js";
 import toDoTasks from "./routes/toDoTasks.js";
 import authRoutes from "./routes/authRoutes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
