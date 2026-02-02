@@ -69,17 +69,17 @@ authRoutes(app);
 toDoLists(app);
 toDoTasks(app);
 
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date() });
+});
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "client/dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+    res.sendFile(path.join(__dirname, "client/dist/index.html"));
   });
 }
-
-app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date() });
-});
 
 app.listen(PORT, (error) => {
   if (!error)
