@@ -19,10 +19,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL:
-        process.env.NODE_ENV === "production"
-          ? "https://to-do-app-server-jvdr.onrender.com/auth/google/callback"
-          : "/auth/google/callback",
+      callbackURL: "/auth/google/callback",
       proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
