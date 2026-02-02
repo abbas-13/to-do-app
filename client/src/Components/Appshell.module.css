@@ -1,0 +1,9 @@
+@reference "../App.css";
+
+.appshell {
+  @apply sm:h-[calc(100%_-_54px)] flex;
+}
+
+.children-container {
+  @apply flex-1 p-4 md:h-full bg-background;
+}
