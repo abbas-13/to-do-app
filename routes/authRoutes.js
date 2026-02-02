@@ -13,7 +13,7 @@ export default (app) => {
     "/auth/google/callback",
     passport.authenticate("google"),
     (req, res) => {
-      res.redirect(`${process.env.CLIENT_SIDE_URL}/`);
+      res.redirect(`/`);
     },
   );
 
