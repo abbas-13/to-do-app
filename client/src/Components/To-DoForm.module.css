@@ -1,0 +1,17 @@
+@reference "../App.css";
+
+.todo-form {
+  @apply grid items-center justify-center grid-cols-1 gap-2 p-2 pb-4 px-4;
+}
+
+.todo-input-field {
+  @apply m-2 p-2 rounded-md flex-grow;
+}
+
+.todo-date-time {
+  @apply flex-grow rounded-md pr-2 h-8 m-2 pl-2;
+}
+
+.todo-form-buttons {
+  @apply m-2 flex-1 shadow-md hover:drop-shadow-xl active:bg-blue-700 p-2 rounded-xl bg-blue-500 text-white;
+}
