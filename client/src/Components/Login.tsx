@@ -1,11 +1,56 @@
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useState } from "react";
+
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { Card } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 
+interface SignInForm {
+  email: string;
+  password: string;
+}
+
 export const Login = () => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<SignInForm>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<SignInForm> = async (data) => {
+    try {
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.json();
+        console.error(errorMessage);
+      }
+
+      navigate("/");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Unkown error occurred";
+      console.error(errorMessage);
+    }
+  };
+
   return (
     <div className="h-screen bg-background flex justify-center items-center">
-      <Card className="flex items-center flex-col w-[300px] bg-secondary! dark:bg-[#1a202c] py-4 pb-8">
+      <Card className="flex items-center flex-col w-[300px] bg-secondary! dark:bg-[#1a202c] pt-4 pb-4">
         <div className="flex gap-2 items-center">
           <img src="/check.png" width={40} />
           <h1 className="bg-gradient-to-r from-[#2097F3] to-[#60B4F5] bg-clip-text text-transparent text-transparent text-[42px] text-balance font-extrabold">
@@ -16,21 +61,74 @@ export const Login = () => {
         <h2 className="scroll-m-20 p-4 text-sm font-[400] text-ring tracking-tight first:mt-0">
           Please sign in to continue
         </h2>
-        <form className="flex flex-col gap-4 items-center w-4/5 px-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4 items-center w-4/5 px-4 pb-4"
+        >
           <div className="flex flex-col gap-1 w-full">
             <label>Email</label>
-            <Input className="dark:bg-gray-200" />
+            <Input
+              {...register("email", {
+                required: "Please enter your email",
+              })}
+              type="email"
+              name="email"
+              placeholder="enter email"
+              className="dark:bg-gray-200"
+            />
+            <ErrorMessage
+              errors={errors}
+              name="password"
+              render={({ message }) => (
+                <p className="text-xs text-red-500 mt-1 text-center">
+                  {message}
+                </p>
+              )}
+            />
           </div>
           <div className="flex flex-col gap-1 w-full">
             <label>Password</label>
-            <Input className="dark:bg-gray-200" />
+            <InputGroup className="gap-2 mt-2">
+              <InputGroupInput
+                className="dark:bg-gray-200"
+                {...register("password", {
+                  required: "Please enter a password of at least 8 characters",
+                  minLength: 8,
+                })}
+                placeholder="enter a password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+              />
+              <InputGroupAddon
+                align="inline-end"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeIcon className="cursor-pointer" />
+                ) : (
+                  <EyeOffIcon className="cursor-pointer" />
+                )}
+              </InputGroupAddon>
+            </InputGroup>
+            <ErrorMessage
+              errors={errors}
+              name="password"
+              render={({ message }) => (
+                <p className="text-xs text-red-500 mt-1 text-center">
+                  {message}
+                </p>
+              )}
+            />
           </div>
           <Button
+            type="submit"
             className="bg-[#2097f3] w-full h-[40px] text-[16px] cursor-pointer hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
             variant="outline"
           >
             Sign In
           </Button>
+        </form>
+        <div className="flex flex-col gap-4 items-center w-4/5 px-4">
           <a
             href={`/auth/google`}
             className="text-[16px] rounded-md! w-full max-h-[40px] cursor-pointer hover:bg-[#FFFFFF]! dark:bg-[#EEEEEE] dark:hover:bg-white! dark:text-black border-2 dark:border-[#EEEEEE] dark:hover:border-2 dark:hover:border-[#EEEEEE]! dark:active:bg-[#EEEEEE]! dark:active:outline-2 dark:active:outline-white flex items-center gap-2 rounded-sm p-2 px-3"
@@ -62,7 +160,31 @@ export const Login = () => {
             </svg>
             Sign in with Google
           </a>
-        </form>
+          <a
+            className="text-[16px] rounded-md! w-full max-h-[40px] cursor-pointer hover:bg-[#FFFFFF]! dark:bg-[#EEEEEE] dark:hover:bg-white! dark:text-black border-2 dark:border-[#EEEEEE] dark:hover:border-2 dark:hover:border-[#EEEEEE]! dark:active:bg-[#EEEEEE]! dark:active:outline-2 dark:active:outline-white flex items-center gap-2 rounded-sm p-2 px-3"
+            href={"/auth/github"}
+          >
+            <svg
+              style={{ width: "24px" }}
+              id="Layer_1"
+              data-name="Layer 1"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="134 105 40 40"
+            >
+              <path
+                fill="#1a1414"
+                d="M152.61,107.44a16.29,16.29,0,0,0-5.15,31.75c.81.15,1.11-.35,1.11-.79s0-1.41,0-2.77c-4.53,1-5.49-2.18-5.49-2.18a4.31,4.31,0,0,0-1.81-2.38c-1.48-1,.11-1,.11-1a3.42,3.42,0,0,1,2.5,1.68,3.47,3.47,0,0,0,4.74,1.35,3.48,3.48,0,0,1,1-2.18c-3.62-.41-7.42-1.81-7.42-8.05a6.3,6.3,0,0,1,1.68-4.37,5.86,5.86,0,0,1,.16-4.31s1.37-.44,4.48,1.67a15.44,15.44,0,0,1,8.16,0c3.11-2.11,4.48-1.67,4.48-1.67a5.85,5.85,0,0,1,.16,4.31,6.29,6.29,0,0,1,1.67,4.37c0,6.26-3.81,7.63-7.44,8a3.89,3.89,0,0,1,1.11,3c0,2.18,0,3.93,0,4.47s.29.94,1.12.78a16.29,16.29,0,0,0-5.16-31.74Z"
+              />
+            </svg>
+            Sign in with GitHub
+          </a>
+        </div>
+        <a
+          href={"/signup"}
+          className="text-sm underline mt-4 font-[400] cursor-pointer underline-offset-2 text-blue-600 dark:text-blue-300 tracking-tight first:mt-0"
+        >
+          New user? Sign up here
+        </a>
       </Card>
     </div>
   );
