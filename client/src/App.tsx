@@ -13,6 +13,7 @@ import { ListsContext } from "@/Context/ListsContext";
 import { SelectListContext } from "@/Context/SelectListContext";
 import { ThemeProvider } from "@/Components/ui/theme-provider";
 import type { ListsStateType, ToDoState, UserType } from "@/assets/Types";
+import { SignUp } from "./Components/SignUp";
 
 const App = () => {
   const [toDos, setToDos] = useState<ToDoState[]>([]);
@@ -149,6 +150,7 @@ const App = () => {
             </Routes>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
             </Routes>
           </ThemeProvider>
         </ListsContext.Provider>

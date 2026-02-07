@@ -24,14 +24,20 @@
   },
   "homepage": "https://github.com/abbas-13/to-do-app-#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "concurrently": "^9.2.1",
     "connect-mongo": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
+    "nodemon": "^3.1.11",
     "passport": "^0.5.3",
+    "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "path": "^0.12.7"
   }
 }
