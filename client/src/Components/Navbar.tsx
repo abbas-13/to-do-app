@@ -22,31 +22,35 @@ export const Navbar = () => {
   const { theme, setTheme } = useTheme();
 
   const logOut = async () => {
-    try {
-      const response = await fetch(`/api/logout`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        setUser({
-          _id: "",
-          name: "",
-          email: "",
-          displayName: "",
+    if (user._id?.length > 0) {
+      try {
+        const response = await fetch(`/api/logout`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
-        setTheme("light");
-        navigate("/login");
-      } else {
-        console.error("Logout failed");
+
+        if (response.ok) {
+          setUser({
+            _id: "",
+            name: "",
+            email: "",
+            displayName: "",
+          });
+          setTheme("light");
+          navigate("/login");
+        } else {
+          console.error("Logout failed");
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unkown error occurred";
+        console.error(errorMessage);
       }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error(errorMessage);
+    } else {
+      navigate("/login");
     }
   };
 

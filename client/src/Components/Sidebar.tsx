@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Menu, Moon, Plus, Sun } from "lucide-react";
+import { LogIn, LogOut, Menu, Moon, Plus, Sun } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ import { SelectListContext } from "@/Context/SelectListContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ListsStateType } from "@/assets/Types";
 import { Switch } from "./ui/switch";
+import { AuthContext } from "@/Context/AuthContext";
 
 export const CustomSidebar = () => {
   const [input, setInput] = useState("");
@@ -20,6 +21,8 @@ export const CustomSidebar = () => {
 
   const { lists, setLists } = useContext(ListsContext);
   const { selectList, setSelectedList } = useContext(SelectListContext);
+  const { user, setUser } = useContext(AuthContext);
+
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
@@ -121,6 +124,39 @@ export const CustomSidebar = () => {
     setTheme(selectedTheme);
   };
 
+  const logOut = async () => {
+    if (user._id?.length > 0) {
+      try {
+        const response = await fetch(`/api/logout`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          setUser({
+            _id: "",
+            name: "",
+            email: "",
+            displayName: "",
+          });
+          setTheme("light");
+          navigate("/login");
+        } else {
+          console.error("Logout failed");
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unkown error occurred";
+        console.error(errorMessage);
+      }
+    } else {
+      navigate("/login");
+    }
+  };
+
   const sideBarContent = () => {
     return (
       <div className="h-full flex justify-between flex-col">
@@ -192,6 +228,22 @@ export const CustomSidebar = () => {
                 />
                 <Sun size={18} />
               </div>
+            </div>
+            <div
+              onClick={logOut}
+              className="flex justify-between w-full p-2 px-4 mb-2 active:bg-gray-600 rounded-md"
+            >
+              {user._id?.length > 0 ? (
+                <div className="flex justify-between w-full items-center">
+                  Logout
+                  <LogOut size={20} />
+                </div>
+              ) : (
+                <div className="flex justify-between w-full items-center">
+                  Login
+                  <LogIn size={20} />
+                </div>
+              )}
             </div>
           </div>
         )}
