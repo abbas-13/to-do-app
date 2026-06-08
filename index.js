@@ -13,6 +13,7 @@ import "./services/passport.js";
 import toDoLists from "./routes/toDoLists.js";
 import toDoTasks from "./routes/toDoTasks.js";
 import authRoutes from "./routes/authRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,8 +23,13 @@ const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 
-await mongoose.connect(process.env.MONGO_URI);
-console.log("MONGODB CONNECTED");
+try {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("MONGODB CONNECTED");
+} catch (err) {
+  console.error("MongoDB connection error:", err);
+  process.exit(1);
+}
 
 const corsOptions = {
   origin:
@@ -61,6 +67,7 @@ app.use(passport.session());
 authRoutes(app);
 toDoLists(app);
 toDoTasks(app);
+aiRoutes(app);
 
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date() });

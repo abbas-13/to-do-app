@@ -1,159 +1,102 @@
 import { useContext, useState } from "react";
-import { LogIn, LogOut, Menu, Moon, Plus, Sun } from "lucide-react";
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import {
+  LogIn,
+  LogOut,
+  Menu,
+  Moon,
+  Plus,
+  Sun,
+  Sparkles,
+  Info,
+} from "lucide-react";
 
-import { useTheme } from "@/Components/ui/theme-provider";
+import { ListsContext } from "@/Context/ListsContext";
+import { AuthContext } from "@/Context/AuthContext";
 import { ToDoList } from "./To-DoList";
 import { SearchBar } from "./SearchBar";
+import { Switch } from "./ui/switch";
 import { Button } from "@/Components/ui/button";
 import { Sidebar, SidebarContent, useSidebar } from "@/Components/ui/sidebar";
-import { ListsContext } from "@/Context/ListsContext";
-import { SelectListContext } from "@/Context/SelectListContext";
+import { useTheme } from "@/Components/ui/theme-provider";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/Components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useListFunctions } from "@/hooks/useListFunctions";
+
 import type { ListsStateType } from "@/assets/Types";
-import { Switch } from "./ui/switch";
-import { AuthContext } from "@/Context/AuthContext";
+import { ErrorMessage } from "@hookform/error-message";
+import { Input } from "./ui/input";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { useAuth } from "@/hooks/useAuth";
+import { SelectListContext } from "@/Context/SelectListContext";
+
+export interface ProjectFormInput {
+  projectName: string;
+}
 
 export const CustomSidebar = () => {
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState<ListsStateType[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { lists, setLists } = useContext(ListsContext);
-  const { selectList, setSelectedList } = useContext(SelectListContext);
-  const { user, setUser } = useContext(AuthContext);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ProjectFormInput>();
+
+  const { user } = useContext(AuthContext);
+  const { lists } = useContext(ListsContext);
+  const { selectList } = useContext(SelectListContext);
+
+  const { fetchToDoLists, addList, createList, deleteList } =
+    useListFunctions();
+  const { logOut } = useAuth();
 
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
-
-  const addList = async () => {
-    try {
-      const response = await fetch(`/api/lists`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 401) {
-          toast.error(errorData.error, {
-            position: "top-center",
-            action: {
-              label: "Login",
-              onClick: () => navigate("/login"),
-            },
-          });
-        }
-      }
-
-      const { body } = await response.json();
-
-      setLists([{ _id: body._id, name: "" }, ...lists]);
-      selectList(body._id, "");
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error(errorMessage);
-    }
-  };
-
-  const createList = async (name: string, id: string): Promise<void> => {
-    try {
-      const response = await fetch(`/api/lists/${id}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const updatedLists = lists.map((list: ListsStateType) =>
-        list._id === id ? { ...list, name } : list,
-      );
-
-      setLists(updatedLists);
-      setSelectedList(updatedLists[0]);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error("Create list failed: ", errorMessage);
-    }
-  };
-
-  const deleteList = async (id: string): Promise<void> => {
-    try {
-      const response = await fetch(`/api/lists/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const updatedToDoLists = lists.filter(
-        (toDoList: ListsStateType) => toDoList._id !== id,
-      );
-
-      setLists(updatedToDoLists);
-      selectList("", "");
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error("Delete list failed: ", errorMessage);
-    }
-  };
 
   const toggleTheme = (isChecked: boolean) => {
     const selectedTheme = isChecked ? "light" : "dark";
     setTheme(selectedTheme);
   };
 
-  const logOut = async () => {
-    if (user._id?.length > 0) {
-      try {
-        const response = await fetch(`/api/logout`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  const processTask = async (input: string) => {
+    try {
+      const response = await fetch("/api/process-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input }),
+      });
+      return response.json();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Unkown error occurred";
+      console.error("Fetching To Dos failed: ", errorMessage);
+    }
+  };
 
-        if (response.ok) {
-          setUser({
-            _id: "",
-            name: "",
-            email: "",
-            displayName: "",
-          });
-          setTheme("light");
-          navigate("/login");
-        } else {
-          console.error("Logout failed");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Unkown error occurred";
-        console.error(errorMessage);
-      }
-    } else {
-      navigate("/login");
+  const onSubmit: SubmitHandler<ProjectFormInput> = async (data) => {
+    try {
+      const response = await processTask(data.projectName);
+
+      selectList(response.body.toDoList._id, response.body.toDoList.name);
+      fetchToDoLists();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Unable to process task";
+      console.error(errorMessage);
+    } finally {
+      reset();
+      setIsDialogOpen(false);
     }
   };
 
@@ -181,13 +124,87 @@ export const CustomSidebar = () => {
           />
           <div className="flex my-4 items-center justify-center w-full">
             <Button
-              className="bg-foreground hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
+              className="w-10/12 bg-foreground hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
               variant="outline"
               onClick={addList}
             >
               Create List
               <Plus strokeWidth={3} />
             </Button>
+          </div>
+          <div className="flex my-4 items-center justify-center w-full">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="w-11/12 bg-foreground hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(true)}
+                >
+                  Create Project
+                  <Sparkles strokeWidth={2} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[380px]! rounded-lg md:max-w-[420px]! p-0!">
+                <DialogHeader className="pt-4 pl-4 text-left">
+                  <DialogTitle>New Project</DialogTitle>
+                </DialogHeader>
+                <div className="border border-gray-200"></div>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="grid items-center justify-center grid-cols-1 gap-2 p-2 pb-4 px-4"
+                >
+                  <div className="grid grid-cols-[30%_70%] py-2">
+                    <label className="text-xs flex items-center font-semibold md:text-sm dark:text-white">
+                      Project Title:
+                    </label>
+                    <div>
+                      <Input
+                        {...register("projectName", {
+                          required: "Please enter project name",
+                        })}
+                        type="text"
+                        autoComplete="off"
+                        name="projectName"
+                        placeholder="Project name"
+                        className="text-xs md:text-sm dark:text-black dark:bg-gray-200!"
+                      />
+                      <ErrorMessage
+                        errors={errors}
+                        name="projectName"
+                        render={({ message }) => (
+                          <p className="text-xs text-red-500 mt-1 text-center">
+                            {message}
+                          </p>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full mt-2 flex justify-center">
+                    <div className="p-[2px]">
+                      <Info size={12} color="#a1a1a1" />
+                    </div>
+                    <p className="text-[10px] text-center flex items-center text-muted-foreground">
+                      Enter title and submit to automatically break down project
+                      into managable tasks and assign priorities to each
+                    </p>
+                  </div>
+                  <div className="border border-gray-200 my-2"></div>
+                  <div className="grid grid-cols-2 justify-self-end w-1/2 justify-center gap-2 items-center">
+                    <Button
+                      className="bg-[#2097f3] hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:outline-2 active:outline-[#85C7F8] active:text-white hover:text-black hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                    <DialogClose asChild>
+                      <Button className="text-[#2097f3] hover:bg-white hover:shadow-lg active:shadow-none active:outline-2 active:outline-[#85C7F8] bg-white border-2 border-[#2097f3]">
+                        Close
+                      </Button>
+                    </DialogClose>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
           {input?.length
             ? searchResults?.map((item) => (
@@ -222,7 +239,6 @@ export const CustomSidebar = () => {
                 <Switch
                   checked={theme === "light" ? true : false}
                   onCheckedChange={(checked) => {
-                    event?.stopPropagation();
                     toggleTheme(checked);
                   }}
                 />
