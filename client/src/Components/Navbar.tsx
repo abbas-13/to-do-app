@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { useNavigate } from "react-router";
 import { CircleUserRound, LogIn, LogOut, Moon, Sun } from "lucide-react";
 
 import {
@@ -15,44 +14,13 @@ import { Avatar } from "@/Components/ui/avatar";
 import { Switch } from "@/Components/ui/switch";
 import { useTheme } from "@/Components/ui/theme-provider";
 import { AuthContext } from "@/Context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Navbar = () => {
-  const { user, setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const { theme, setTheme } = useTheme();
 
-  const logOut = async () => {
-    if (user._id?.length > 0) {
-      try {
-        const response = await fetch(`/api/logout`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          setUser({
-            _id: "",
-            name: "",
-            email: "",
-            displayName: "",
-          });
-          setTheme("light");
-          navigate("/login");
-        } else {
-          console.error("Logout failed");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Unkown error occurred";
-        console.error(errorMessage);
-      }
-    } else {
-      navigate("/login");
-    }
-  };
+  const { logOut } = useAuth();
 
   const toggleTheme = (isChecked: boolean) => {
     const selectedTheme = isChecked ? "light" : "dark";

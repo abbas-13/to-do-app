@@ -34,18 +34,14 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { Calendar } from "@/Components/ui/calendar";
+import { useListFunctions } from "@/hooks/useListFunctions";
 
 interface DashboardProps {
   toDos: ToDoState[];
   setToDos: Dispatch<SetStateAction<ToDoState[]>>;
-  fetchToDoLists: () => void;
 }
 
-export const Dashboard = ({
-  toDos,
-  setToDos,
-  fetchToDoLists,
-}: DashboardProps) => {
+export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -57,6 +53,8 @@ export const Dashboard = ({
   const isSmallScreen = useIsMobile();
 
   const { selectedList } = useContext(SelectListContext);
+
+  const { fetchToDoLists } = useListFunctions();
 
   const onSubmit: SubmitHandler<ToDoFormInput> = async (data) => {
     try {

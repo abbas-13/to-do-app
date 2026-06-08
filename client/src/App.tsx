@@ -60,40 +60,6 @@ const App = () => {
     fetchToDos(id);
   };
 
-  const fetchToDoLists = async () => {
-    try {
-      const response = await fetch(`/api/lists`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 401) {
-          toast.error(errorData.error, {
-            position: "top-center",
-            action: {
-              label: "Login",
-              onClick: () => navigate("/login"),
-            },
-          });
-        }
-        throw new Error(await response.json());
-      }
-
-      const toDoLists = await response.json();
-      setLists(
-        toDoLists.map((item: ListsStateType) => {
-          return { _id: item._id, name: item.name };
-        }),
-      );
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error("Error while fetching lists: ", errorMessage);
-    }
-  };
-
   const fetchUser = async () => {
     try {
       const response = await fetch(`/api/current_user`, {
@@ -139,11 +105,7 @@ const App = () => {
                 path="/"
                 element={
                   <Appshell>
-                    <Dashboard
-                      fetchToDoLists={fetchToDoLists}
-                      toDos={toDos}
-                      setToDos={setToDos}
-                    />
+                    <Dashboard toDos={toDos} setToDos={setToDos} />
                   </Appshell>
                 }
               />
