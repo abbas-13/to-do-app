@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   LogIn,
   LogOut,
@@ -27,14 +27,11 @@ import {
   DialogTrigger,
 } from "@/Components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useListFunctions } from "@/hooks/useListFunctions";
 
 import type { ListsStateType } from "@/assets/Types";
 import { ErrorMessage } from "@hookform/error-message";
 import { Input } from "./ui/input";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAuth } from "@/hooks/useAuth";
-import { SelectListContext } from "@/Context/SelectListContext";
 
 export interface ProjectFormInput {
   projectName: string;
@@ -52,13 +49,9 @@ export const CustomSidebar = () => {
     formState: { errors },
   } = useForm<ProjectFormInput>();
 
-  const { user } = useContext(AuthContext);
-  const { lists } = useContext(ListsContext);
-  const { selectList } = useContext(SelectListContext);
-
-  const { fetchToDoLists, addList, createList, deleteList } =
-    useListFunctions();
-  const { logOut } = useAuth();
+  const { user, logOut } = useContext(AuthContext);
+  const { lists, selectList, fetchToDoLists, addList, createList, deleteList } =
+    useContext(ListsContext);
 
   const { toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
@@ -99,6 +92,12 @@ export const CustomSidebar = () => {
       setIsDialogOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (lists.length < 1) {
+      fetchToDoLists();
+    }
+  }, []);
 
   const sideBarContent = () => {
     return (
@@ -249,7 +248,7 @@ export const CustomSidebar = () => {
               onClick={logOut}
               className="flex justify-between w-full p-2 px-4 mb-2 active:bg-gray-600 rounded-md"
             >
-              {user._id?.length > 0 ? (
+              {user ? (
                 <div className="flex justify-between w-full items-center">
                   Logout
                   <LogOut size={20} />

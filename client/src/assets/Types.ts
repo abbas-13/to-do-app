@@ -6,7 +6,7 @@ export interface ToDoState {
   isChecked: boolean;
   list: string;
   toDoName: string;
-  date: Date;
+  date: string;
   notes: string;
   time: string;
   priority: string;
@@ -21,12 +21,23 @@ export interface ListsStateType {
 export interface ListsContextType {
   lists: ListsStateType[];
   setLists: Dispatch<SetStateAction<ListsStateType[]>>;
-}
-
-export interface SelectListContextType {
   selectList: (id: string, name: string) => void;
   selectedList: ListsStateType;
   setSelectedList: Dispatch<SetStateAction<ListsStateType>>;
+  fetchToDoLists: () => void;
+  addList: () => void;
+  createList: (name: string, id: string) => void;
+  deleteList: (id: string) => void;
+}
+
+export interface TToDoContext {
+  toDos: ToDoState[];
+  setToDos: Dispatch<SetStateAction<ToDoState[]>>;
+  fetchToDos: (id: string) => void;
+  checkToDo: (toDoId: string, isChecked: boolean) => void;
+  deleteToDo: (toDoId: string) => void;
+  createToDo: (data: ToDoFormInput) => void;
+  updateToDo: (toDoId: string, data: ToDoFormInput) => void;
 }
 
 export interface ToDoFormInput {
@@ -48,12 +59,11 @@ export interface ToDoFormProps {
   isDialogOpen: boolean;
   setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
   isSubmitSuccessful: boolean;
+  data?: ToDoState;
 }
 
 export interface ToDoItemProps {
   data: ToDoState;
-  checkToDo: (id: string, isChecked: boolean) => void;
-  deleteToDo: (id: string) => void;
 }
 
 export interface ToDoListProps {
@@ -70,6 +80,6 @@ export interface UserType {
 }
 
 export interface UserContextType {
-  user: UserType;
-  setUser: Dispatch<SetStateAction<UserType>>;
+  user: UserType | null;
+  logOut: () => void;
 }

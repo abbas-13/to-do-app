@@ -1,4 +1,10 @@
-import { Trash, CalendarDays, Clock, EllipsisVertical } from "lucide-react";
+import {
+  Trash,
+  CalendarDays,
+  Clock,
+  EllipsisVertical,
+  Pencil,
+} from "lucide-react";
 
 import { Checkbox } from "@/Components//ui/checkbox";
 import {
@@ -8,10 +14,20 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/Components/ui/menubar";
-import type { ToDoItemProps } from "@/assets/Types";
-import styles from "./To-DoItem.module.css";
 
-export const ToDoItem = ({ data, checkToDo, deleteToDo }: ToDoItemProps) => {
+import type { ToDoFormInput, ToDoItemProps } from "@/assets/Types";
+import styles from "./To-DoItem.module.css";
+import { useContext, useState } from "react";
+import { type SubmitHandler } from "react-hook-form";
+import { ToDoForm } from "./To-DoForm";
+import { ToDoContext } from "@/Context/ToDoContext";
+
+export const ToDoItem = ({ data }: ToDoItemProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
+
+  const { checkToDo, deleteToDo, updateToDo } = useContext(ToDoContext);
+
   const priorityColour = () => {
     switch (data.priority) {
       case "high":
@@ -22,6 +38,18 @@ export const ToDoItem = ({ data, checkToDo, deleteToDo }: ToDoItemProps) => {
         return "bg-green-200";
       default:
         return "bg-transparent";
+    }
+  };
+
+  const onSubmit: SubmitHandler<ToDoFormInput> = async (editedData) => {
+    try {
+      updateToDo(data._id, editedData);
+    } catch (err) {
+      const error =
+        err instanceof Error ? err.message : "Unkown error occurred";
+      console.log(error);
+    } finally {
+      setIsSubmitSuccessful(true);
     }
   };
 
@@ -92,10 +120,24 @@ export const ToDoItem = ({ data, checkToDo, deleteToDo }: ToDoItemProps) => {
                     Delete
                     <Trash size={18} color="red" />
                   </MenubarItem>
+                  <MenubarItem
+                    className="flex justify-between dark:text-background"
+                    onClick={() => setIsDialogOpen(true)}
+                  >
+                    Edit
+                    <Pencil size={18} color="#2097f3" />
+                  </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
           </div>
+          <ToDoForm
+            onSubmit={onSubmit}
+            isDialogOpen={isDialogOpen}
+            setIsDialogOpen={setIsDialogOpen}
+            isSubmitSuccessful={isSubmitSuccessful}
+            data={data}
+          />
         </div>
       </div>
       <div className="border border-gray-200 m-2"></div>

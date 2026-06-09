@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Plus } from "lucide-react";
 import { ErrorMessage } from "@hookform/error-message";
 
 import {
@@ -9,7 +8,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/Components/ui/dialog";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -24,12 +22,14 @@ import {
 } from "@/Components/ui/select";
 import type { ToDoFormInput, ToDoFormProps } from "@/assets/Types";
 import styles from "./To-DoForm.module.css";
+import { convertTimeTo24Hour } from "@/lib/utils";
 
 export const ToDoForm = ({
   onSubmit,
   isDialogOpen,
   setIsDialogOpen,
   isSubmitSuccessful,
+  data,
 }: ToDoFormProps) => {
   const {
     register,
@@ -54,18 +54,9 @@ export const ToDoForm = ({
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className="bg-foreground px-3 md:px-4 gap-1 md:gap-2 hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white active:outline-2 active:outline-[#85C7F8] hover:text-black hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
-          variant="outline"
-        >
-          Add Task
-          <Plus strokeWidth={3} />
-        </Button>
-      </DialogTrigger>
       <DialogContent className="max-w-[380px]! rounded-lg md:max-w-[420px]! p-0!">
         <DialogHeader className="pt-4 pl-4 text-left">
-          <DialogTitle>Describe to-do</DialogTitle>
+          <DialogTitle>{data ? "Edit to-do" : "Describe to-do"}</DialogTitle>
         </DialogHeader>
         <div className="border border-gray-200"></div>
         <form onSubmit={handleSubmit(onSubmit)} className={styles["todo-form"]}>
@@ -79,6 +70,7 @@ export const ToDoForm = ({
                   required: "Please enter to-do name",
                 })}
                 type="text"
+                defaultValue={data ? data.toDoName : undefined}
                 name="toDoName"
                 placeholder="To do name"
                 className="text-xs md:text-sm dark:text-black dark:bg-gray-200!"
@@ -107,7 +99,7 @@ export const ToDoForm = ({
                   <>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={data ? data.priority : field.value}
                     >
                       <SelectTrigger className="text-xs md:text-sm dark:text-black dark:bg-gray-200!">
                         <SelectValue placeholder="Select a priority" />
@@ -149,6 +141,7 @@ export const ToDoForm = ({
                 placeholder="Notes description"
                 {...register("notes")}
                 name="notes"
+                defaultValue={data ? data.notes : undefined}
                 className="text-xs md:text-sm dark:bg-gray-200! dark:text-black"
               />
             </div>
@@ -165,6 +158,7 @@ export const ToDoForm = ({
                   })}
                   type="date"
                   name="date"
+                  defaultValue={data ? data.date.substring(0, 10) : undefined}
                   id="finish by"
                   className="text-xs md:text-sm flex-1 dark:bg-gray-200! dark:text-black"
                 />
@@ -185,6 +179,9 @@ export const ToDoForm = ({
                   })}
                   type="time"
                   name="time"
+                  defaultValue={
+                    data ? convertTimeTo24Hour(data?.time) : undefined
+                  }
                   id="finish by"
                   className="text-xs md:text-sm pl-2 pr-1 md:py-1 md:px-3 flex-1 dark:bg-gray-200! dark:text-black"
                   min={formattedDate}

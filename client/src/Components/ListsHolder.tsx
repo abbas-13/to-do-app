@@ -1,17 +1,26 @@
-import { useContext } from "react";
+import { useState } from "react";
+
+import { ListsContext } from "@/Context/ListsContext";
+import type { ListsStateType } from "@/assets/Types";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import { ListsContext } from "@/Context/ListsContext";
-import { SelectListContext } from "@/Context/SelectListContext";
+interface ListsHolderProps {
+  children: React.ReactNode;
+}
 
-import type { ListsStateType } from "@/assets/Types";
-
-export const useListFunctions = () => {
-  const { lists, setLists } = useContext(ListsContext);
-  const { selectList, setSelectedList } = useContext(SelectListContext);
+export const ListsHolder = ({ children }: ListsHolderProps) => {
+  const [lists, setLists] = useState<ListsStateType[]>([]);
+  const [selectedList, setSelectedList] = useState<ListsStateType>({
+    _id: "",
+    name: "",
+  });
 
   const navigate = useNavigate();
+
+  const selectList = (id: string, name?: string) => {
+    setSelectedList({ _id: id, name: name ? name : "" });
+  };
 
   const fetchToDoLists = async () => {
     try {
@@ -81,7 +90,7 @@ export const useListFunctions = () => {
     }
   };
 
-  const createList = async (name: string, id: string): Promise<void> => {
+  const createList = async (name: string, id: string) => {
     try {
       const response = await fetch(`/api/lists/${id}`, {
         method: "PUT",
@@ -110,7 +119,7 @@ export const useListFunctions = () => {
     }
   };
 
-  const deleteList = async (id: string): Promise<void> => {
+  const deleteList = async (id: string) => {
     try {
       const response = await fetch(`/api/lists/${id}`, {
         method: "DELETE",
@@ -125,11 +134,7 @@ export const useListFunctions = () => {
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
-      const updatedToDoLists = lists.filter(
-        (toDoList: ListsStateType) => toDoList._id !== id,
-      );
-
-      setLists(updatedToDoLists);
+      fetchToDoLists();
       selectList("", "");
     } catch (err) {
       const errorMessage =
@@ -138,5 +143,21 @@ export const useListFunctions = () => {
     }
   };
 
-  return { fetchToDoLists, addList, createList, deleteList };
+  return (
+    <ListsContext.Provider
+      value={{
+        lists,
+        setLists,
+        selectList,
+        selectedList,
+        setSelectedList,
+        fetchToDoLists,
+        addList,
+        createList,
+        deleteList,
+      }}
+    >
+      {children}
+    </ListsContext.Provider>
+  );
 };
