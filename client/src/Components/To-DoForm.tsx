@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 
@@ -28,13 +27,11 @@ export const ToDoForm = ({
   onSubmit,
   isDialogOpen,
   setIsDialogOpen,
-  isSubmitSuccessful,
   data,
 }: ToDoFormProps) => {
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<ToDoFormInput>();
@@ -47,10 +44,6 @@ export const ToDoForm = ({
   const formattedDate = `${day.toString().padStart(2, "0")}/${month
     .toString()
     .padStart(2, "0")}/${year}`;
-
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

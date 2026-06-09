@@ -58,7 +58,6 @@ export interface ToDoFormProps {
   onSubmit: SubmitHandler<ToDoFormInput>;
   isDialogOpen: boolean;
   setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-  isSubmitSuccessful: boolean;
   data?: ToDoState;
 }
 

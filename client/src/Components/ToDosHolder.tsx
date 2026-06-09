@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { ToDoContext } from "@/Context/ToDoContext";
 import type { ToDoFormInput, ToDoState } from "@/assets/Types";
 import { ListsContext } from "@/Context/ListsContext";
+import { useForm } from "react-hook-form";
 
 interface ToDosHolderProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface ToDosHolderProps {
 export const ToDosHolder = ({ children }: ToDosHolderProps) => {
   const [toDos, setToDos] = useState<ToDoState[]>([]);
   const { selectedList } = useContext(ListsContext);
+  const { reset } = useForm<ToDoFormInput>();
 
   const fetchToDos = async (id: string) => {
     try {
@@ -34,6 +36,41 @@ export const ToDosHolder = ({ children }: ToDosHolderProps) => {
       const errorMessage =
         err instanceof Error ? err.message : "Unkown error occurred";
       console.error("Fetching To Dos failed: ", errorMessage);
+    }
+  };
+
+  const createToDo = async (data: ToDoFormInput) => {
+    try {
+      const newToDo = {
+        list: selectedList._id,
+        toDoName: data.toDoName,
+        notes: data.notes,
+        date: new Date(data.date),
+        time: data.time,
+        isChecked: false,
+        priority: data.priority,
+        dateCreated: new Date(),
+      };
+
+      const response = await fetch(`/api/toDos`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newToDo),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const { body } = await response.json();
+      reset();
+      setToDos([...toDos, body]);
+    } catch (err) {
+      console.log(err instanceof Error ? err.message : "Unkown error occurred");
     }
   };
 
@@ -110,41 +147,6 @@ export const ToDosHolder = ({ children }: ToDosHolderProps) => {
       const errorMessage =
         err instanceof Error ? err.message : "Unkown error occurred";
       console.error("Delete todo failed: ", errorMessage);
-    }
-  };
-
-  const createToDo = async (data: ToDoFormInput) => {
-    try {
-      const newToDo = {
-        list: selectedList._id,
-        toDoName: data.toDoName,
-        notes: data.notes,
-        date: new Date(data.date),
-        time: data.time,
-        isChecked: false,
-        priority: data.priority,
-        dateCreated: new Date(),
-      };
-
-      const response = await fetch(`/api/toDos`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newToDo),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const { body } = await response.json();
-
-      setToDos([...toDos, body]);
-    } catch (err) {
-      console.log(err instanceof Error ? err.message : "Unkown error occurred");
     }
   };
 

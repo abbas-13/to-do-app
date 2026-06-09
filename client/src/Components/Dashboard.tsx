@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import type { SubmitHandler } from "react-hook-form";
+import { type SubmitHandler } from "react-hook-form";
 import {
   CircleArrowDown,
   CircleArrowUp,
@@ -34,7 +34,6 @@ import { ListsContext } from "@/Context/ListsContext";
 
 export const Dashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -49,8 +48,8 @@ export const Dashboard = () => {
   const onSubmit: SubmitHandler<ToDoFormInput> = async (data) => {
     try {
       createToDo(data);
+
       setIsDialogOpen(false);
-      setIsSubmitSuccessful(true);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Unkown error occurred";
@@ -123,7 +122,6 @@ export const Dashboard = () => {
             onSubmit={onSubmit}
             isDialogOpen={isDialogOpen}
             setIsDialogOpen={setIsDialogOpen}
-            isSubmitSuccessful={isSubmitSuccessful}
           />
           <div className="min-h-[100%] grid grid-cols-5 gap-[0px] md:gap-2!">
             <div className="bg-white! dark:bg-[#1e3a5f]! w-[35px] sm:w-[60px] justify-self-end h-full flex items-center justify-center rounded-md sm:px-2 border-1 ">

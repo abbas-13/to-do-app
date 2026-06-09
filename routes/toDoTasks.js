@@ -36,17 +36,17 @@ export default (app) => {
 
   app.put("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
-      const updatedToDo = await ToDo.findOne({
-        _id: req.params.id,
-        userId: req.user._id,
-      });
+      const updatedToDo = await ToDo.updateOne(
+        {
+          _id: req.params.id,
+          userId: req.user._id,
+        },
+        req.body,
+      );
 
       if (!updatedToDo) {
         res.status(404).json({ error: "ToDo not found" });
       }
-
-      updatedToDo.isChecked = req.body.isChecked;
-      await updatedToDo.save();
 
       res.status(200).json({
         message: "ToDo updated successfully",

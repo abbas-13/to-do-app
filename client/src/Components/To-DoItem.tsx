@@ -24,7 +24,6 @@ import { ToDoContext } from "@/Context/ToDoContext";
 
 export const ToDoItem = ({ data }: ToDoItemProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
 
   const { checkToDo, deleteToDo, updateToDo } = useContext(ToDoContext);
 
@@ -44,12 +43,11 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
   const onSubmit: SubmitHandler<ToDoFormInput> = async (editedData) => {
     try {
       updateToDo(data._id, editedData);
+      setIsDialogOpen(false);
     } catch (err) {
       const error =
         err instanceof Error ? err.message : "Unkown error occurred";
       console.log(error);
-    } finally {
-      setIsSubmitSuccessful(true);
     }
   };
 
@@ -135,7 +133,6 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
             onSubmit={onSubmit}
             isDialogOpen={isDialogOpen}
             setIsDialogOpen={setIsDialogOpen}
-            isSubmitSuccessful={isSubmitSuccessful}
             data={data}
           />
         </div>
