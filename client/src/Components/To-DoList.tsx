@@ -1,13 +1,13 @@
 import { useContext, useState } from "react";
 import { X } from "lucide-react";
 
-import { SelectListContext } from "@/Context/SelectListContext";
 import { useSidebar } from "@/Components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ToDoListProps } from "@/assets/Types";
+import { ListsContext } from "@/Context/ListsContext";
 
 export const ToDoList = ({ list, deleteList, createList }: ToDoListProps) => {
-  const { selectList } = useContext(SelectListContext);
+  const { selectList } = useContext(ListsContext);
   const [inputValue, setInputValue] = useState(list.name || "");
   const isMobile = useIsMobile();
   const { toggleSidebar } = useSidebar();

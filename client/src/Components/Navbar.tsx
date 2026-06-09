@@ -14,13 +14,10 @@ import { Avatar } from "@/Components/ui/avatar";
 import { Switch } from "@/Components/ui/switch";
 import { useTheme } from "@/Components/ui/theme-provider";
 import { AuthContext } from "@/Context/AuthContext";
-import { useAuth } from "@/hooks/useAuth";
 
 export const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
   const { theme, setTheme } = useTheme();
-
-  const { logOut } = useAuth();
 
   const toggleTheme = (isChecked: boolean) => {
     const selectedTheme = isChecked ? "light" : "dark";
@@ -40,7 +37,7 @@ export const Navbar = () => {
         <DropdownMenuTrigger asChild>
           <div className="flex gap-2 items-center">
             <h4 className="scroll-m-20 text-lg font-medium tracking-tight">
-              {user.name}
+              {user?.name}
             </h4>
             <Avatar className="flex justify-center items-center border-2">
               <CircleUserRound size={26} />
@@ -51,7 +48,7 @@ export const Navbar = () => {
           <DropdownMenuGroup>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuItem onClick={logOut}>
-              {user._id?.length > 0 ? (
+              {user?._id?.length > 0 ? (
                 <div className="flex justify-between w-full items-center">
                   Logout
                   <LogOut size={20} />

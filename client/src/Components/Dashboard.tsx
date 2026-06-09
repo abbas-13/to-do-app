@@ -1,11 +1,5 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
-import type { SubmitHandler } from "react-hook-form";
+import { useContext, useEffect, useState } from "react";
+import { type SubmitHandler } from "react-hook-form";
 import {
   CircleArrowDown,
   CircleArrowUp,
@@ -14,11 +8,12 @@ import {
   Funnel,
 } from "lucide-react";
 import { type DateRange } from "react-day-picker";
+import { Plus } from "lucide-react";
 
 import type { ToDoFormInput, ToDoState } from "@/assets/Types";
 import { ToDoForm } from "@/Components/To-DoForm";
 import { ToDoItem } from "@/Components/To-DoItem";
-import { SelectListContext } from "@/Context/SelectListContext";
+import { Button } from "@/Components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
@@ -34,16 +29,11 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { Calendar } from "@/Components/ui/calendar";
-import { useListFunctions } from "@/hooks/useListFunctions";
+import { ToDoContext } from "@/Context/ToDoContext";
+import { ListsContext } from "@/Context/ListsContext";
 
-interface DashboardProps {
-  toDos: ToDoState[];
-  setToDos: Dispatch<SetStateAction<ToDoState[]>>;
-}
-
-export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
+export const Dashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -52,98 +42,18 @@ export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
 
   const isSmallScreen = useIsMobile();
 
-  const { selectedList } = useContext(SelectListContext);
-
-  const { fetchToDoLists } = useListFunctions();
+  const { selectedList } = useContext(ListsContext);
+  const { toDos, createToDo } = useContext(ToDoContext);
 
   const onSubmit: SubmitHandler<ToDoFormInput> = async (data) => {
     try {
-      const newToDo = {
-        list: selectedList._id,
-        toDoName: data.toDoName,
-        notes: data.notes,
-        date: new Date(data.date),
-        time: data.time,
-        isChecked: false,
-        priority: data.priority,
-        dateCreated: new Date(),
-      };
+      createToDo(data);
 
-      const response = await fetch(`/api/toDos`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newToDo),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const { body } = await response.json();
-
-      setToDos([...toDos, body]);
       setIsDialogOpen(false);
-      setIsSubmitSuccessful(true);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Unkown error occurred";
       console.error("Create To-Do failed: ", errorMessage);
-    }
-  };
-
-  const checkToDo = async (toDoId: string, isChecked: boolean) => {
-    try {
-      const response = await fetch(`/api/toDos/${toDoId}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isChecked: isChecked }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const updatedToDos = toDos.map((toDo) =>
-        toDo._id === toDoId ? { ...toDo, isChecked: !toDo.isChecked } : toDo,
-      );
-
-      setToDos(updatedToDos);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error("PUT failed: ", errorMessage);
-    }
-  };
-
-  const deleteToDo = async (toDoId: string) => {
-    try {
-      const response = await fetch(`/api/toDos/${toDoId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      const updatedToDos = toDos.filter((toDo) => toDo._id !== toDoId);
-      setToDos(updatedToDos);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unkown error occurred";
-      console.error("Delete todo failed: ", errorMessage);
     }
   };
 
@@ -159,21 +69,6 @@ export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
     }
   };
 
-  const dateFilter = () => {
-    if (dateRange?.from && dateRange?.to) {
-      const fromDate = new Date(dateRange?.from as Date);
-      const toDate = new Date(dateRange?.to as Date);
-      const updatedToDos = toDos.filter((item: ToDoState) => {
-        const toDoDate = new Date(item.date);
-
-        return toDoDate >= fromDate && toDoDate <= toDate;
-      });
-      if (updatedToDos !== toDos) {
-        setFilteredToDos(updatedToDos);
-      }
-    }
-  };
-
   const statusFilter = (status: boolean) => {
     const updatedToDos = toDos.filter(
       (item: ToDoState) => item.isChecked === status,
@@ -182,16 +77,27 @@ export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
   };
 
   useEffect(() => {
+    const dateFilter = () => {
+      if (dateRange?.from && dateRange?.to) {
+        const fromDate = new Date(dateRange?.from as Date);
+        const toDate = new Date(dateRange?.to as Date);
+        const updatedToDos = toDos.filter((item: ToDoState) => {
+          const toDoDate = new Date(item.date);
+
+          return toDoDate >= fromDate && toDoDate <= toDate;
+        });
+        if (updatedToDos !== toDos) {
+          setFilteredToDos(updatedToDos);
+        }
+      }
+    };
+
     dateFilter();
   }, [dateRange]);
 
   useEffect(() => {
     setFilteredToDos(toDos);
-  }, [toDos]);
-
-  useEffect(() => {
-    fetchToDoLists();
-  }, []);
+  }, [toDos, selectedList]);
 
   return (
     <>
@@ -204,11 +110,18 @@ export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
       <div className="border border-gray-200 m-2"></div>
       {selectedList?.name ? (
         <div className="flex mx-2 justify-between">
+          <Button
+            className="bg-foreground px-3 md:px-4 gap-1 md:gap-2 hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white active:outline-2 active:outline-[#85C7F8] hover:text-black hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
+            variant="outline"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            Add Task
+            <Plus strokeWidth={3} />
+          </Button>
           <ToDoForm
             onSubmit={onSubmit}
             isDialogOpen={isDialogOpen}
             setIsDialogOpen={setIsDialogOpen}
-            isSubmitSuccessful={isSubmitSuccessful}
           />
           <div className="min-h-[100%] grid grid-cols-5 gap-[0px] md:gap-2!">
             <div className="bg-white! dark:bg-[#1e3a5f]! w-[35px] sm:w-[60px] justify-self-end h-full flex items-center justify-center rounded-md sm:px-2 border-1 ">
@@ -295,14 +208,9 @@ export const Dashboard = ({ toDos, setToDos }: DashboardProps) => {
 
       <div className="flex flex-col gap-2 mt-2 p-2 overflow-scroll h-[calc(100%-130px)]">
         {(() => {
-          if (filteredToDos) {
+          if (filteredToDos && selectedList) {
             return filteredToDos.map((toDo, index) => (
-              <ToDoItem
-                key={index}
-                data={toDo}
-                checkToDo={checkToDo}
-                deleteToDo={deleteToDo}
-              />
+              <ToDoItem key={index} data={toDo} />
             ));
           }
         })()}
