@@ -135,11 +135,11 @@ export const CustomSidebar = () => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button
-                  className="w-11/12 bg-foreground hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
+                  className="w-10/12 bg-foreground hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
                   variant="outline"
                   onClick={() => setIsDialogOpen(true)}
                 >
-                  Create Project
+                  Plan With AI
                   <Sparkles strokeWidth={2} />
                 </Button>
               </DialogTrigger>
