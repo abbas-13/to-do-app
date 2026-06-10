@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { type SubmitHandler } from "react-hook-form";
 import {
   CircleArrowDown,
@@ -10,7 +10,7 @@ import {
 import { type DateRange } from "react-day-picker";
 import { Plus } from "lucide-react";
 
-import type { ToDoFormInput, ToDoState } from "@/assets/Types";
+import type { ToDoFormInput } from "@/assets/Types";
 import { ToDoForm } from "@/Components/To-DoForm";
 import { ToDoItem } from "@/Components/To-DoItem";
 import { Button } from "@/Components/ui/button";
@@ -34,11 +34,12 @@ import { ListsContext } from "@/Context/ListsContext";
 
 export const Dashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<boolean | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
-  const [filteredToDos, setFilteredToDos] = useState<ToDoState[]>();
 
   const isSmallScreen = useIsMobile();
 
@@ -57,47 +58,33 @@ export const Dashboard = () => {
     }
   };
 
-  const priorityFilter = (priority: string) => {
-    if (priority === "all") {
-      setFilteredToDos(toDos);
-    } else {
-      const updatedToDos = toDos.filter(
-        (item: ToDoState) => item.priority === priority,
-      );
+  const filteredToDos = useMemo(() => {
+    let result = toDos;
 
-      setFilteredToDos(updatedToDos);
+    if (priorityFilter !== "all") {
+      result = result.filter((item) => item.priority === priorityFilter);
     }
+
+    if (statusFilter !== null) {
+      result = result.filter((item) => item.isChecked === statusFilter);
+    }
+
+    if (dateRange?.from && dateRange?.to) {
+      const from = new Date(dateRange.from);
+      const to = new Date(dateRange.to);
+      result = result.filter((item) => {
+        const d = new Date(item.date);
+        return d >= from && d <= to;
+      });
+    }
+    return result;
+  }, [toDos, priorityFilter, dateRange, statusFilter]);
+
+  const resetFilters = () => {
+    setPriorityFilter("all");
+    setStatusFilter(null);
+    setDateRange({ from: undefined, to: undefined });
   };
-
-  const statusFilter = (status: boolean) => {
-    const updatedToDos = toDos.filter(
-      (item: ToDoState) => item.isChecked === status,
-    );
-    setFilteredToDos(updatedToDos);
-  };
-
-  useEffect(() => {
-    const dateFilter = () => {
-      if (dateRange?.from && dateRange?.to) {
-        const fromDate = new Date(dateRange?.from as Date);
-        const toDate = new Date(dateRange?.to as Date);
-        const updatedToDos = toDos.filter((item: ToDoState) => {
-          const toDoDate = new Date(item.date);
-
-          return toDoDate >= fromDate && toDoDate <= toDate;
-        });
-        if (updatedToDos !== toDos) {
-          setFilteredToDos(updatedToDos);
-        }
-      }
-    };
-
-    dateFilter();
-  }, [dateRange]);
-
-  useEffect(() => {
-    setFilteredToDos(toDos);
-  }, [toDos, selectedList]);
 
   return (
     <>
@@ -155,11 +142,13 @@ export const Dashboard = () => {
                       <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
                       <DropdownMenuPortal>
                         <DropdownMenuSubContent>
-                          <DropdownMenuItem onSelect={() => statusFilter(true)}>
+                          <DropdownMenuItem
+                            onSelect={() => setStatusFilter(true)}
+                          >
                             Completed
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onSelect={() => statusFilter(false)}
+                            onSelect={() => setStatusFilter(false)}
                           >
                             Incomplete
                           </DropdownMenuItem>
@@ -167,7 +156,7 @@ export const Dashboard = () => {
                       </DropdownMenuPortal>
                     </DropdownMenuSub>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => priorityFilter("all")}>
+                    <DropdownMenuItem onSelect={() => resetFilters()}>
                       Reset Filters
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -176,28 +165,28 @@ export const Dashboard = () => {
             </div>
             <div
               className="bg-white! dark:bg-[#1e3a5f]! dark:text-white text-sm h-full flex gap-2 cursor-pointer items-center justify-center rounded-md sm:px-3 border-1"
-              onClick={() => priorityFilter("all")}
+              onClick={() => setPriorityFilter("all")}
             >
               <CircleCheck size={20} color="#2097f3" />
               {!isSmallScreen && "All"}
             </div>
             <div
               className="bg-white! dark:bg-[#1e3a5f]! dark:text-white h-full text-sm flex items-center cursor-pointer gap-2 justify-center rounded-md sm:px-3 border-1"
-              onClick={() => priorityFilter("high")}
+              onClick={() => setPriorityFilter("high")}
             >
               <CircleArrowUp size={20} color="red" />
               {!isSmallScreen && "High"}
             </div>
             <div
               className="bg-white! dark:bg-[#1e3a5f]! h-full text-sm dark:text-white flex items-center cursor-pointer gap-2 justify-center rounded-md sm:px-3 border-1"
-              onClick={() => priorityFilter("medium")}
+              onClick={() => setPriorityFilter("medium")}
             >
               <CircleEqual size={20} color="orange" />
               {!isSmallScreen && "Medium"}
             </div>
             <div
               className="bg-white! dark:bg-[#1e3a5f]! h-full text-sm flex dark:text-white items-center cursor-pointer gap-2 justify-center rounded-md md:px-3 border-1"
-              onClick={() => priorityFilter("low")}
+              onClick={() => setPriorityFilter("low")}
             >
               <CircleArrowDown size={20} color="green" />
               {!isSmallScreen && "Low"}

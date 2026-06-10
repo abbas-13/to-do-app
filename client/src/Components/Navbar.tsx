@@ -48,7 +48,7 @@ export const Navbar = () => {
           <DropdownMenuGroup>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuItem onClick={logOut}>
-              {user?._id?.length > 0 ? (
+              {user ? (
                 <div className="flex justify-between w-full items-center">
                   Logout
                   <LogOut size={20} />
