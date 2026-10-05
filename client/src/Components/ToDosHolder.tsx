@@ -1,18 +1,13 @@
 import { useContext, useEffect, useState } from "react";
+import { Outlet } from "react-router";
 
 import { ToDoContext } from "@/Context/ToDoContext";
 import type { ToDoFormInput, ToDoState } from "@/assets/Types";
 import { ListsContext } from "@/Context/ListsContext";
-import { useForm } from "react-hook-form";
 
-interface ToDosHolderProps {
-  children: React.ReactNode;
-}
-
-export const ToDosHolder = ({ children }: ToDosHolderProps) => {
+export const ToDosHolder = () => {
   const [toDos, setToDos] = useState<ToDoState[]>([]);
   const { selectedList } = useContext(ListsContext);
-  const { reset } = useForm<ToDoFormInput>();
 
   const fetchToDos = async (id: string) => {
     try {
@@ -67,7 +62,6 @@ export const ToDosHolder = ({ children }: ToDosHolderProps) => {
       }
 
       const { body } = await response.json();
-      reset();
       setToDos([...toDos, body]);
     } catch (err) {
       console.log(err instanceof Error ? err.message : "Unkown error occurred");
@@ -168,7 +162,7 @@ export const ToDosHolder = ({ children }: ToDosHolderProps) => {
         updateToDo,
       }}
     >
-      {children}
+      <Outlet />
     </ToDoContext.Provider>
   );
 };

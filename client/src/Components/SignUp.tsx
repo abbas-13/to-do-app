@@ -6,9 +6,11 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { toast } from "sonner";
+import { AuthContext } from "@/Context/AuthContext";
+import { Logo } from "@/Components/Logo";
 
 export interface SignUpForm {
   email: string;
@@ -19,6 +21,7 @@ export interface SignUpForm {
 
 export const SignUp = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -48,6 +51,7 @@ export const SignUp = () => {
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
+      await refreshUser();
       navigate("/");
     } catch (err) {
       const errorMessage =
@@ -66,16 +70,11 @@ export const SignUp = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex justify-center items-center">
-      <Card className="flex items-center flex-col w-[350px] bg-secondary! dark:bg-[#1a202c] pt-4 pb-8">
-        <div className="flex gap-2 items-center">
-          <img src="/check.png" width={40} />
-          <h1 className="bg-gradient-to-r from-[#2097F3] to-[#60B4F5] bg-clip-text text-transparent text-transparent text-[42px] text-balance font-extrabold">
-            To-Do
-          </h1>
-        </div>
-        <div className="border mt-2 border-gray-200 w-11/12"></div>
-        <h2 className="scroll-m-20 p-4 text-sm font-[400] text-ring tracking-tight first:mt-0">
+    <div className="min-h-screen bg-background flex justify-center items-center px-4 py-10">
+      <Card className="flex items-center flex-col w-[360px] bg-petal dark:bg-card border-border pt-6 pb-8">
+        <Logo size={40} wordmarkClassName="text-foreground text-[42px]" />
+        <div className="border-t border-border mt-2 w-11/12"></div>
+        <h2 className="scroll-m-20 p-4 text-sm font-[400] text-muted-foreground tracking-tight first:mt-0">
           Please sign up to continue
         </h2>
         <form
@@ -91,7 +90,6 @@ export const SignUp = () => {
               type="text"
               name="email"
               placeholder="enter your email"
-              className="dark:bg-gray-200 mt-2"
             />
             <ErrorMessage
               errors={errors}
@@ -112,7 +110,6 @@ export const SignUp = () => {
               type="text"
               name="name"
               placeholder="enter your name"
-              className="dark:bg-gray-200 mt-2"
             />
             <ErrorMessage
               errors={errors}
@@ -128,7 +125,6 @@ export const SignUp = () => {
             <label>Password</label>
             <InputGroup className="gap-2 mt-2">
               <InputGroupInput
-                className="dark:bg-gray-200"
                 {...register("password", {
                   required: "Please enter a password of at least 8 characters",
                   minLength: 8,
@@ -178,7 +174,6 @@ export const SignUp = () => {
                 placeholder="confirm your password"
                 type={showPassword.confirmPwd ? "text" : "password"}
                 name="confirmPassword"
-                className="dark:bg-gray-200"
               />
               <InputGroupAddon
                 align="inline-end"
@@ -189,7 +184,7 @@ export const SignUp = () => {
                   }))
                 }
               >
-                {showPassword.pwd ? (
+                {showPassword.confirmPwd ? (
                   <EyeIcon className="cursor-pointer" />
                 ) : (
                   <EyeOffIcon className="cursor-pointer" />
@@ -205,17 +200,13 @@ export const SignUp = () => {
             )}
           />
 
-          <Button
-            className="bg-[#2097f3] w-5/6 mt-2 h-[40px] text-[16px] cursor-pointer hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
-            variant="outline"
-            type="submit"
-          >
+          <Button className="w-5/6 mt-2 h-[42px] text-[15px]" type="submit">
             Sign Up
           </Button>
         </form>
         <a
           href={"/login"}
-          className="text-sm underline mt-4 font-[400] cursor-pointer underline-offset-2 text-blue-600 dark:text-blue-300 tracking-tight first:mt-0"
+          className="text-sm underline mt-4 font-medium cursor-pointer underline-offset-2 text-magenta tracking-tight first:mt-0"
         >
           Already have an account? Sign in here
         </a>

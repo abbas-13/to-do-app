@@ -9,6 +9,7 @@ const toDoSchema = new mongoose.Schema({
   time: String,
   priority: String,
   dateCreated: String,
+  completedAt: { type: Date, default: null },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   deleted: { type: Boolean, required: true },
 });

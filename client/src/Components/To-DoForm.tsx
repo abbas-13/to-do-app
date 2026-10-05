@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 
@@ -33,6 +34,7 @@ export const ToDoForm = ({
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<ToDoFormInput>();
 
@@ -45,16 +47,31 @@ export const ToDoForm = ({
     .toString()
     .padStart(2, "0")}/${year}`;
 
+  useEffect(() => {
+    if (!isDialogOpen) return;
+
+    reset({
+      toDoName: data?.toDoName ?? "",
+      priority: data?.priority ?? "",
+      notes: data?.notes ?? "",
+      date: (data?.date ? data.date.substring(0, 10) : "") as unknown as Date,
+      time: data?.time ? convertTimeTo24Hour(data.time) : "",
+    });
+  }, [isDialogOpen, reset, data]);
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="max-w-[380px]! rounded-lg md:max-w-[420px]! p-0!">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-[380px]! rounded-[10px] md:max-w-[420px]! p-0!"
+      >
         <DialogHeader className="pt-4 pl-4 text-left">
           <DialogTitle>{data ? "Edit to-do" : "Describe to-do"}</DialogTitle>
         </DialogHeader>
         <div className="border border-gray-200"></div>
         <form onSubmit={handleSubmit(onSubmit)} className={styles["todo-form"]}>
           <div className="grid grid-cols-[30%_70%] py-2">
-            <label className="text-xs font-semibold md:text-sm dark:text-white">
+            <label className="text-xs font-semibold md:text-sm text-foreground">
               To-Do Name:
             </label>
             <div>
@@ -63,10 +80,9 @@ export const ToDoForm = ({
                   required: "Please enter to-do name",
                 })}
                 type="text"
-                defaultValue={data ? data.toDoName : undefined}
                 name="toDoName"
                 placeholder="To do name"
-                className="text-xs md:text-sm dark:text-black dark:bg-gray-200!"
+                className="text-xs md:text-sm"
               />
               <ErrorMessage
                 errors={errors}
@@ -80,7 +96,7 @@ export const ToDoForm = ({
             </div>
           </div>
           <div className="grid grid-cols-[30%_70%] py-2">
-            <label className="text-xs font-semibold md:text-sm dark:text-white">
+            <label className="text-xs font-semibold md:text-sm text-foreground">
               Priority:
             </label>
             <div>
@@ -91,10 +107,10 @@ export const ToDoForm = ({
                 render={({ field }) => (
                   <>
                     <Select
+                      value={field.value ?? ""}
                       onValueChange={field.onChange}
-                      defaultValue={data ? data.priority : field.value}
                     >
-                      <SelectTrigger className="text-xs md:text-sm dark:text-black dark:bg-gray-200!">
+                      <SelectTrigger className="text-xs md:text-sm">
                         <SelectValue placeholder="Select a priority" />
                       </SelectTrigger>
                       <SelectContent>
@@ -126,7 +142,7 @@ export const ToDoForm = ({
             </div>
           </div>
           <div className="grid grid-cols-[30%_70%] py-2">
-            <label className="text-xs font-semibold md:text-sm dark:text-white">
+            <label className="text-xs font-semibold md:text-sm text-foreground">
               Notes:
             </label>
             <div>
@@ -134,13 +150,12 @@ export const ToDoForm = ({
                 placeholder="Notes description"
                 {...register("notes")}
                 name="notes"
-                defaultValue={data ? data.notes : undefined}
-                className="text-xs md:text-sm dark:bg-gray-200! dark:text-black"
+                className="text-xs md:text-sm"
               />
             </div>
           </div>
           <div className="grid grid-cols-[30%_70%] py-2">
-            <label className="text-xs font-semibold md:text-sm dark:text-white">
+            <label className="text-xs font-semibold md:text-sm text-foreground">
               Date:
             </label>
             <div className="flex gap-2">
@@ -151,9 +166,8 @@ export const ToDoForm = ({
                   })}
                   type="date"
                   name="date"
-                  defaultValue={data ? data.date.substring(0, 10) : undefined}
                   id="finish by"
-                  className="text-xs md:text-sm flex-1 dark:bg-gray-200! dark:text-black"
+                  className="text-xs md:text-sm flex-1"
                 />
                 <ErrorMessage
                   errors={errors}
@@ -172,11 +186,8 @@ export const ToDoForm = ({
                   })}
                   type="time"
                   name="time"
-                  defaultValue={
-                    data ? convertTimeTo24Hour(data?.time) : undefined
-                  }
                   id="finish by"
-                  className="text-xs md:text-sm pl-2 pr-1 md:py-1 md:px-3 flex-1 dark:bg-gray-200! dark:text-black"
+                  className="text-xs md:text-sm pl-2 pr-1 md:py-1 md:px-3 flex-1"
                   min={formattedDate}
                 />
                 <ErrorMessage
@@ -193,16 +204,9 @@ export const ToDoForm = ({
           </div>
           <div className="border border-gray-200 my-2"></div>
           <div className="grid grid-cols-2 justify-self-end w-1/2 justify-center gap-2 items-center">
-            <Button
-              className="bg-[#2097f3] hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:outline-2 active:outline-[#85C7F8] active:text-white hover:text-black hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
-              type="submit"
-            >
-              Submit
-            </Button>
+            <Button type="submit">Submit</Button>
             <DialogClose asChild>
-              <Button className="text-[#2097f3] hover:bg-white hover:shadow-lg active:shadow-none active:outline-2 active:outline-[#85C7F8] bg-white border-2 border-[#2097f3]">
-                Close
-              </Button>
+              <Button variant="outline">Close</Button>
             </DialogClose>
           </div>
         </form>

@@ -1,5 +1,5 @@
 @reference "../App.css";
 
 .MenubarContent {
-  @apply min-w-[100px]! bg-[#FAFBFF];
+  @apply min-w-[100px]! bg-popover;
 }

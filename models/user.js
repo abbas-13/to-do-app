@@ -18,5 +18,14 @@ userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 userSchema.index({ githubId: 1 }, { unique: true, sparse: true });
 userSchema.index({ "local.email": 1 }, { unique: true, sparse: true });
 
+userSchema.set("toJSON", {
+  transform: (_doc, ret) => {
+    if (ret.local) {
+      delete ret.local.password;
+    }
+    return ret;
+  },
+});
+
 const User = mongoose.model("User", userSchema);
 export default User;

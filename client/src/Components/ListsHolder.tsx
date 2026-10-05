@@ -2,14 +2,10 @@ import { useState } from "react";
 
 import { ListsContext } from "@/Context/ListsContext";
 import type { ListsStateType } from "@/assets/Types";
-import { useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { toast } from "sonner";
 
-interface ListsHolderProps {
-  children: React.ReactNode;
-}
-
-export const ListsHolder = ({ children }: ListsHolderProps) => {
+export const ListsHolder = () => {
   const [lists, setLists] = useState<ListsStateType[]>([]);
   const [selectedList, setSelectedList] = useState<ListsStateType>({
     _id: "",
@@ -30,9 +26,10 @@ export const ListsHolder = ({ children }: ListsHolderProps) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
+
         if (response.status === 401) {
-          toast.error(errorData.error, {
+          toast.error(errorData.error || "You need to login first", {
             position: "top-center",
             action: {
               label: "Login",
@@ -40,7 +37,8 @@ export const ListsHolder = ({ children }: ListsHolderProps) => {
             },
           });
         }
-        throw new Error(await response.json());
+
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
       const toDoLists = await response.json();
@@ -67,9 +65,10 @@ export const ListsHolder = ({ children }: ListsHolderProps) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
+
         if (response.status === 401) {
-          toast.error(errorData.error, {
+          toast.error(errorData.error || "You need to login first", {
             position: "top-center",
             action: {
               label: "Login",
@@ -77,6 +76,8 @@ export const ListsHolder = ({ children }: ListsHolderProps) => {
             },
           });
         }
+
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
       const { body } = await response.json();
@@ -157,7 +158,7 @@ export const ListsHolder = ({ children }: ListsHolderProps) => {
         deleteList,
       }}
     >
-      {children}
+      <Outlet />
     </ListsContext.Provider>
   );
 };

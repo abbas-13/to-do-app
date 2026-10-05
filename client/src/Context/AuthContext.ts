@@ -4,5 +4,7 @@ import type { UserContextType } from "@/assets/Types";
 
 export const AuthContext = createContext<UserContextType>({
   user: null,
+  loading: false,
   logOut: () => {},
+  refreshUser: async () => null,
 });

@@ -10,33 +10,37 @@ import { ThemeProvider } from "@/Components/ui/theme-provider";
 import { SignUp } from "./Components/SignUp";
 import { ListsHolder } from "./Components/ListsHolder";
 import { ToDosHolder } from "./Components/ToDosHolder";
-import { AuthHolder } from "./Components/AuthHolder";
+import { AuthProvider } from "./Components/AuthProvider";
+import { RequireAuth } from "./Components/RequireAuth";
 
 const App = () => {
   return (
-    <AuthHolder>
-      <ListsHolder>
-        <ToDosHolder>
-          <ThemeProvider defaultTheme="light">
-            <Toaster />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Appshell>
-                    <Dashboard />
-                  </Appshell>
-                }
-              />
-            </Routes>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-            </Routes>
-          </ThemeProvider>
-        </ToDosHolder>
-      </ListsHolder>
-    </AuthHolder>
+    <ThemeProvider defaultTheme="light">
+      <AuthProvider>
+        <Toaster />
+        <Routes>
+          {/* Public / unauthenticated routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+
+          {/* Protected routes: the guard renders <Outlet /> only when authed */}
+          <Route element={<RequireAuth />}>
+            <Route element={<ListsHolder />}>
+              <Route element={<ToDosHolder />}>
+                <Route
+                  path="/"
+                  element={
+                    <Appshell>
+                      <Dashboard />
+                    </Appshell>
+                  }
+                />
+              </Route>
+            </Route>
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

@@ -79,11 +79,17 @@ export default (app) => {
 
   app.post("/api/logout", (req, res, next) => {
     req.logout();
-    req.session = null;
-    res.json({ message: "Logged out successfully" });
+    req.session.destroy((err) => {
+      if (err) return next(err);
+      res.clearCookie("connect.sid");
+      res.json({ message: "Logged out successfully" });
+    });
   });
 
   app.get("/api/current_user", (req, res) => {
-    res.send(req.user);
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    res.json(req.user);
   });
 };

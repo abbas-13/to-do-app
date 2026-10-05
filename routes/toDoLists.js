@@ -36,7 +36,7 @@ export default (app) => {
       });
 
       if (!toDoList) {
-        res.status(400).json({ error: "List not found" });
+        return res.status(404).json({ error: "List not found" });
       }
       toDoList.name = req.body.name;
       await toDoList.save();

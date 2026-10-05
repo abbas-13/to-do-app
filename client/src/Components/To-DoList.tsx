@@ -7,10 +7,12 @@ import type { ToDoListProps } from "@/assets/Types";
 import { ListsContext } from "@/Context/ListsContext";
 
 export const ToDoList = ({ list, deleteList, createList }: ToDoListProps) => {
-  const { selectList } = useContext(ListsContext);
+  const { selectList, selectedList } = useContext(ListsContext);
   const [inputValue, setInputValue] = useState(list.name || "");
   const isMobile = useIsMobile();
   const { toggleSidebar } = useSidebar();
+
+  const isActive = selectedList?._id === list._id;
 
   const handleListNameChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -25,10 +27,12 @@ export const ToDoList = ({ list, deleteList, createList }: ToDoListProps) => {
           event.preventDefault();
           createList(inputValue, list._id);
         }}
-        className="flex max-w-fit gap-1 m-2 items-center"
+        className={`group flex items-center gap-1 rounded-[10px] mx-2 px-2 py-1 transition-colors ${
+          isActive ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/60"
+        }`}
       >
         <div
-          className="w-6/7 p-2 focus-within:border-b-1 focus-within:border-b-[#2097F3] cursor-pointer"
+          className="min-w-0 flex-1 py-1 cursor-pointer"
           onClick={() => {
             if (list?.name) {
               selectList(list._id, list?.name);
@@ -44,9 +48,9 @@ export const ToDoList = ({ list, deleteList, createList }: ToDoListProps) => {
             placeholder="List name..."
             disabled={list.name?.length > 1}
             value={inputValue}
-            className={`focus:outline-none w-full border-none bg-transparent text-black dark:text-white ${
-              list.name?.length > 1 ? "pointer-events-none" : ""
-            }`}
+            className={`w-full border-none bg-transparent focus:outline-none placeholder:text-fog ${
+              isActive ? "text-magenta" : "text-bone"
+            } ${list.name?.length > 1 ? "pointer-events-none" : ""}`}
           />
         </div>
         <X
@@ -54,13 +58,12 @@ export const ToDoList = ({ list, deleteList, createList }: ToDoListProps) => {
             event.stopPropagation();
             deleteList(list._id);
           }}
-          color="red"
-          strokeWidth={4}
-          size={20}
-          style={{ cursor: "pointer" }}
+          className="shrink-0 cursor-pointer text-destructive/70 opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
+          strokeWidth={2.5}
+          size={16}
         />
       </form>
-      <div className="border border-gray-200 m-2"></div>
+      <div className="mx-2 border-t border-sidebar-border/60"></div>
     </>
   );
 };

@@ -30,11 +30,11 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
   const priorityColour = () => {
     switch (data.priority) {
       case "high":
-        return "bg-red-200";
+        return "bg-magenta/25 text-foreground";
       case "medium":
-        return "bg-yellow-300";
+        return "bg-amber/50 text-foreground";
       case "low":
-        return "bg-green-200";
+        return "bg-lavender-smoke/20 text-foreground";
       default:
         return "bg-transparent";
     }
@@ -53,11 +53,11 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between rounded-[10px] border border-border bg-card px-4 py-3 transition-colors hover:bg-petal dark:hover:bg-accent">
         <div className="grid w-[60%] md:min-w-[75%] lg:min-w-[80%]">
           <div className="flex items-center gap-2 h-full">
             <Checkbox
-              className="data-[state=checked]:border-2 data-[state=checked]:border-white data-[state=checked]:outline-1 rounded-[8px] data-[state=checked]:bg-[#2097f3] data-[state=checked]:text-transparent dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+              className="rounded-[6px]"
               checked={data.isChecked}
               onCheckedChange={(checked: boolean) =>
                 checkToDo(data._id, checked)
@@ -65,19 +65,21 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
             />
 
             <p
-              className={`leading-7 font-semibold text-black dark:text-primary ${
-                data.isChecked && "line-through text-[#A9A9A9]"
+              className={`leading-7 font-semibold text-foreground ${
+                data.isChecked && "line-through text-muted-foreground"
               }`}
             >
               {data.toDoName}
             </p>
-            <div className={`rounded-sm text-sm px-2 ${priorityColour()}`}>
+            <div
+              className={`rounded-full text-xs px-2 py-0.5 font-medium ${priorityColour()}`}
+            >
               <p>{data.priority}</p>
             </div>
           </div>
           <p
-            className={`leading-7 text-black dark:text-primary text-xs ml-6 max-w-[180px] md:min-w-full ${
-              data.isChecked && "text-[#A9A9A9]"
+            className={`leading-7 text-xs ml-6 max-w-[180px] md:min-w-full text-muted-foreground ${
+              data.isChecked && "text-muted-foreground/70"
             }`}
           >
             {data.notes}
@@ -85,16 +87,16 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
         </div>
         <div className="flex flex-col gap-1 pr-2">
           <label
-            className={`ml-2 text-xs sm:text-xs flex items-center gap-2 text-black dark:text-primary ${
-              data.isChecked && "text-[#A9A9A9]"
+            className={`ml-2 text-xs sm:text-xs flex items-center gap-2 whitespace-nowrap text-muted-foreground ${
+              data.isChecked && "text-muted-foreground/70"
             }`}
           >
             <CalendarDays size={12} />
             {new Date(data.date).toISOString().substring(0, 10)}
           </label>
           <label
-            className={`ml-2 text-xs sm:text-xs flex items-center gap-2 text-black dark:text-primary ${
-              data.isChecked && "text-[#A9A9A9]"
+            className={`ml-2 text-xs sm:text-xs flex items-center gap-2 whitespace-nowrap text-muted-foreground ${
+              data.isChecked && "text-muted-foreground/70"
             }`}
           >
             <Clock size={12} /> {data.time}
@@ -110,20 +112,20 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
                 </MenubarTrigger>
                 <MenubarContent align="end" className={styles.MenubarContent}>
                   <MenubarItem
-                    className="flex justify-between dark:text-background"
+                    className="flex justify-between"
                     onClick={() => {
                       deleteToDo(data._id);
                     }}
                   >
                     Delete
-                    <Trash size={18} color="red" />
+                    <Trash size={18} color="#b42318" />
                   </MenubarItem>
                   <MenubarItem
-                    className="flex justify-between dark:text-background"
+                    className="flex justify-between"
                     onClick={() => setIsDialogOpen(true)}
                   >
                     Edit
-                    <Pencil size={18} color="#2097f3" />
+                    <Pencil size={18} color="#e57cd8" />
                   </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
@@ -137,7 +139,6 @@ export const ToDoItem = ({ data }: ToDoItemProps) => {
           />
         </div>
       </div>
-      <div className="border border-gray-200 m-2"></div>
     </>
   );
 };

@@ -14,6 +14,7 @@ import toDoLists from "./routes/toDoLists.js";
 import toDoTasks from "./routes/toDoTasks.js";
 import authRoutes from "./routes/authRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +22,12 @@ const __dirname = dirname(__filename);
 const app = express();
 
 app.set("trust proxy", 1);
+
+// app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
+//   const sig = req.headers["stripe-signature"];
+//   const event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+// });
+
 app.use(express.json());
 
 try {
@@ -68,6 +75,7 @@ authRoutes(app);
 toDoLists(app);
 toDoTasks(app);
 aiRoutes(app);
+analyticsRoutes(app);
 
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date() });
