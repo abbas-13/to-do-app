@@ -14,6 +14,7 @@ import { Avatar } from "@/Components/ui/avatar";
 import { Switch } from "@/Components/ui/switch";
 import { useTheme } from "@/Components/ui/theme-provider";
 import { AuthContext } from "@/Context/AuthContext";
+import { Logo } from "@/Components/Logo";
 
 export const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -25,21 +26,16 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between h-[54px] p-6 bg-secondary border-b-2 border-b-grey-400 items-center">
-      <div className="flex gap-4 items-center">
-        <img style={{ height: "30px" }} src="/check.png" />
-        <h1 className="bg-gradient-to-r from-[#2097F3] to-[#60B4F5] bg-clip-text text-transparent text-transparent text-3xl font-semibold">
-          to-do
-        </h1>
-      </div>
+    <div className="flex items-center justify-between h-[54px] px-6 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
+      <Logo size={28} wordmarkClassName="text-bone" />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex gap-2 items-center">
-            <h4 className="scroll-m-20 text-lg font-medium tracking-tight">
+          <div className="flex gap-2 items-center cursor-pointer">
+            <h4 className="scroll-m-20 text-lg font-medium tracking-tight text-bone">
               {user?.name}
             </h4>
-            <Avatar className="flex justify-center items-center border-2">
+            <Avatar className="flex justify-center items-center border border-bone/30 text-bone">
               <CircleUserRound size={26} />
             </Avatar>
           </div>

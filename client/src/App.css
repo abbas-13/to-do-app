@@ -4,6 +4,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  /* Toggl-inspired palette */
+  --color-plum: #2c1338;
+  --color-heather: #412a4c;
+  --color-magenta: #e57cd8;
+  --color-lavender-smoke: #564260;
+  --color-dusty-mauve: #6b5a74;
+  --color-stone-violet: #817187;
+  --color-ink: #000000;
+  --color-bone: #fefbfa;
+  --color-silver: #d5d0d7;
+  --color-fog: #c0b8c3;
+  --color-blush: #fdeae2;
+  --color-petal: #fcf1f8;
+  --color-orchid-mist: #fae5f7;
+  --color-bubblegum-wash: #f7d8f3;
+  --color-amber: #ffde91;
+
+  /* Type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Radii */
+  --radius-card: 10px;
+  --radius-button: 26px;
+  --radius-pill: 200px;
+}
+
 .App {
   text-align: center;
   height: 100%;
@@ -86,72 +115,72 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: #f5fafe;
-  --foreground: #2097f3;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: #fafbff;
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.625rem; /* 10px */
+  --background: #fefbfa; /* Bone */
+  --foreground: #000000; /* Ink */
+  --card: #fefbfa;
+  --card-foreground: #000000;
+  --popover: #fefbfa;
+  --popover-foreground: #000000;
+  --primary: #e57cd8; /* Magenta */
+  --primary-foreground: #2c1338; /* Plum on magenta */
+  --secondary: #fdeae2; /* Blush */
+  --secondary-foreground: #2c1338;
+  --muted: #fcf1f8; /* Petal */
+  --muted-foreground: #6b5a74; /* Dusty Mauve */
+  --accent: #fae5f7; /* Orchid Mist */
+  --accent-foreground: #412a4c; /* Heather */
+  --destructive: #b42318;
+  --border: #d5d0d7; /* Silver */
+  --input: #d5d0d7;
+  --ring: #e57cd8;
+  --chart-1: #e57cd8;
+  --chart-2: #412a4c;
+  --chart-3: #ffde91;
+  --chart-4: #6b5a74;
+  --chart-5: #817187;
+  --sidebar: #2c1338; /* Plum stage */
+  --sidebar-foreground: #fefbfa;
+  --sidebar-primary: #e57cd8;
+  --sidebar-primary-foreground: #2c1338;
+  --sidebar-accent: #412a4c;
+  --sidebar-accent-foreground: #fefbfa;
+  --sidebar-border: #412a4c;
+  --sidebar-ring: #e57cd8;
 }
 
 .dark {
-  --background: #1f252d;
-  --foreground: #2097f3;
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: #1a202c;
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #21102b;
+  --foreground: #fefbfa;
+  --card: #2c1338;
+  --card-foreground: #fefbfa;
+  --popover: #2c1338;
+  --popover-foreground: #fefbfa;
+  --primary: #e57cd8;
+  --primary-foreground: #2c1338;
+  --secondary: #412a4c;
+  --secondary-foreground: #fefbfa;
+  --muted: #412a4c;
+  --muted-foreground: #c0b8c3;
+  --accent: #564260;
+  --accent-foreground: #fefbfa;
+  --destructive: #f87171;
+  --border: #564260;
+  --input: #564260;
+  --ring: #e57cd8;
+  --chart-1: #e57cd8;
+  --chart-2: #ffde91;
+  --chart-3: #c0b8c3;
+  --chart-4: #817187;
+  --chart-5: #6b5a74;
+  --sidebar: #2c1338;
+  --sidebar-foreground: #fefbfa;
+  --sidebar-primary: #e57cd8;
+  --sidebar-primary-foreground: #2c1338;
+  --sidebar-accent: #412a4c;
+  --sidebar-accent-foreground: #fefbfa;
+  --sidebar-border: #412a4c;
+  --sidebar-ring: #e57cd8;
 }
 
 .rdp-month {

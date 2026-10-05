@@ -66,8 +66,10 @@ passport.use(
           githubId: profile.id,
           name: profile.displayName,
           username: profile.username,
+          email: profile.emails?.[0]?.value,
         });
         await user.save();
+        done(null, user);
       } catch (error) {
         done(error, null);
       }

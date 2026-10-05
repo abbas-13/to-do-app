@@ -6,17 +6,20 @@ import { processTask } from "../services/aiServices.js";
 export default (app) => {
   app.post("/api/process-task", requireLogin, async (req, res) => {
     try {
+      // Run the AI breakdown first so we don't persist an empty list if it fails.
+      const result = await processTask(req.body.input);
+
       const newToDoList = new ToDoList({
         userId: req.user._id,
         deleted: false,
       });
 
-      newToDoList.name = req.body.input;
+      newToDoList.name = result.title || req.body.input;
       await newToDoList.save();
 
-      const result = await processTask(req.body.input);
+      const subtasks = Array.isArray(result.subtasks) ? result.subtasks : [];
 
-      const tasks = result.subtasks.map((item) => {
+      const tasks = subtasks.map((item) => {
         return {
           userId: req.user._id,
           list: newToDoList._id,
@@ -29,10 +32,8 @@ export default (app) => {
         };
       });
 
-      try {
+      if (tasks.length > 0) {
         await ToDo.create(tasks);
-      } catch (err) {
-        console.log(err);
       }
 
       res.status(201).json({
@@ -43,6 +44,7 @@ export default (app) => {
         },
       });
     } catch (err) {
+      console.error("process-task failed: ", err);
       res.status(500).json({ error: "Failed to process task" });
     }
   });

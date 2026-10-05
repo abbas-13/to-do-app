@@ -36,16 +36,37 @@ export default (app) => {
 
   app.put("/api/toDos/:id", requireLogin, async (req, res) => {
     try {
+      const allowedFields = [
+        "toDoName",
+        "notes",
+        "date",
+        "time",
+        "priority",
+        "isChecked",
+      ];
+      const updates = {};
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updates[field] = req.body[field];
+        }
+      }
+
+      if (updates.isChecked === true) {
+        updates.completedAt = new Date();
+      } else if (updates.isChecked === false) {
+        updates.completedAt = null;
+      }
+
       const updatedToDo = await ToDo.updateOne(
         {
           _id: req.params.id,
           userId: req.user._id,
         },
-        req.body,
+        updates,
       );
 
-      if (!updatedToDo) {
-        res.status(404).json({ error: "ToDo not found" });
+      if (updatedToDo.matchedCount === 0) {
+        return res.status(404).json({ error: "ToDo not found" });
       }
 
       res.status(200).json({

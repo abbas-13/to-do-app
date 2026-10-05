@@ -11,6 +11,7 @@ export interface ToDoState {
   time: string;
   priority: string;
   dateCreated: Date;
+  completedAt?: string | null;
 }
 
 export interface ListsStateType {
@@ -80,5 +81,35 @@ export interface UserType {
 
 export interface UserContextType {
   user: UserType | null;
+  loading: boolean;
   logOut: () => void;
+  refreshUser: () => Promise<UserType | null>;
+}
+
+export interface PriorityAnalytics {
+  total: number;
+  completed: number;
+  avgCompletionMs: number | null;
+}
+
+export interface ListAnalytics {
+  listId: string;
+  name: string;
+  total: number;
+  completed: number;
+  overdue: number;
+}
+
+export interface AnalyticsType {
+  totals: {
+    total: number;
+    completed: number;
+    active: number;
+    overdue: number;
+    completionRate: number;
+  };
+  byPriority: Record<string, PriorityAnalytics>;
+  byList: ListAnalytics[];
+  avgCompletionMs: number | null;
+  completedLast7Days: { date: string; count: number }[];
 }

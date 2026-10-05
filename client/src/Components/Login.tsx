@@ -2,12 +2,15 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { toast } from "sonner";
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { Card } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
+import { AuthContext } from "@/Context/AuthContext";
+import { Logo } from "@/Components/Logo";
 
 interface SignInForm {
   email: string;
@@ -22,6 +25,7 @@ export const Login = () => {
   } = useForm<SignInForm>();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { refreshUser } = useContext(AuthContext);
 
   const onSubmit: SubmitHandler<SignInForm> = async (data) => {
     try {
@@ -36,10 +40,14 @@ export const Login = () => {
       });
 
       if (!response.ok) {
-        const errorMessage = await response.json();
-        console.error(errorMessage);
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.error || "Invalid email or password", {
+          position: "top-center",
+        });
+        return;
       }
 
+      await refreshUser();
       navigate("/");
     } catch (err) {
       const errorMessage =
@@ -49,16 +57,11 @@ export const Login = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex justify-center items-center">
-      <Card className="flex items-center flex-col w-[300px] bg-secondary! dark:bg-[#1a202c] pt-4 pb-4">
-        <div className="flex gap-2 items-center">
-          <img src="/check.png" width={40} />
-          <h1 className="bg-gradient-to-r from-[#2097F3] to-[#60B4F5] bg-clip-text text-transparent text-transparent text-[42px] text-balance font-extrabold">
-            To-Do
-          </h1>
-        </div>
-        <div className="border mt-2 border-gray-200 w-11/12"></div>
-        <h2 className="scroll-m-20 p-4 text-sm font-[400] text-ring tracking-tight first:mt-0">
+    <div className="min-h-screen bg-background flex justify-center items-center px-4 py-10">
+      <Card className="flex items-center flex-col w-[320px] bg-petal dark:bg-card border-border pt-6 pb-6">
+        <Logo size={40} wordmarkClassName="text-foreground text-[42px]" />
+        <div className="border-t border-border mt-2 w-11/12"></div>
+        <h2 className="scroll-m-20 p-4 text-sm font-[400] text-muted-foreground tracking-tight first:mt-0">
           Please sign in to continue
         </h2>
         <form
@@ -74,7 +77,6 @@ export const Login = () => {
               type="email"
               name="email"
               placeholder="enter email"
-              className="dark:bg-gray-200"
             />
             <ErrorMessage
               errors={errors}
@@ -90,7 +92,6 @@ export const Login = () => {
             <label>Password</label>
             <InputGroup className="gap-2 mt-2">
               <InputGroupInput
-                className="dark:bg-gray-200"
                 {...register("password", {
                   required: "Please enter a password of at least 8 characters",
                   minLength: 8,
@@ -120,18 +121,14 @@ export const Login = () => {
               )}
             />
           </div>
-          <Button
-            type="submit"
-            className="bg-[#2097f3] w-full h-[40px] text-[16px] cursor-pointer hover:bg-[#FFFFFF] hover:border-2 hover:border-[#2097f3] active:bg-[#2097f3] active:text-white hover:text-black active:outline-2 active:outline-[#85C7F8] hover:shadow-lg active:shadow-none active:border-1 active:border-white text-white"
-            variant="outline"
-          >
+          <Button type="submit" className="w-full h-[42px] text-[15px]">
             Sign In
           </Button>
         </form>
         <div className="flex flex-col gap-4 items-center w-4/5 px-4">
           <a
             href={`/auth/google`}
-            className="text-[16px] rounded-md! w-full max-h-[40px] cursor-pointer hover:bg-[#FFFFFF]! dark:bg-[#EEEEEE] dark:hover:bg-white! dark:text-black border-2 dark:border-[#EEEEEE] dark:hover:border-2 dark:hover:border-[#EEEEEE]! dark:active:bg-[#EEEEEE]! dark:active:outline-2 dark:active:outline-white flex items-center gap-2 rounded-sm p-2 px-3"
+            className="flex h-[42px] w-full items-center justify-center gap-2 rounded-[26px] border border-border bg-bone px-4 text-[15px] font-medium text-foreground transition-colors hover:bg-accent dark:bg-transparent"
           >
             <svg
               version="1.1"
@@ -161,7 +158,7 @@ export const Login = () => {
             Sign in with Google
           </a>
           <a
-            className="text-[16px] rounded-md! w-full max-h-[40px] cursor-pointer hover:bg-[#FFFFFF]! dark:bg-[#EEEEEE] dark:hover:bg-white! dark:text-black border-2 dark:border-[#EEEEEE] dark:hover:border-2 dark:hover:border-[#EEEEEE]! dark:active:bg-[#EEEEEE]! dark:active:outline-2 dark:active:outline-white flex items-center gap-2 rounded-sm p-2 px-3"
+            className="flex h-[42px] w-full items-center justify-center gap-2 rounded-[26px] border border-border bg-bone px-4 text-[15px] font-medium text-foreground transition-colors hover:bg-accent dark:bg-transparent"
             href={"/auth/github"}
           >
             <svg
@@ -181,7 +178,7 @@ export const Login = () => {
         </div>
         <a
           href={"/signup"}
-          className="text-sm underline mt-4 font-[400] cursor-pointer underline-offset-2 text-blue-600 dark:text-blue-300 tracking-tight first:mt-0"
+          className="text-sm underline mt-4 font-medium cursor-pointer underline-offset-2 text-magenta tracking-tight first:mt-0"
         >
           New user? Sign up here
         </a>
